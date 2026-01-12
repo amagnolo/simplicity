@@ -8,22 +8,25 @@
 
 package micropolisj.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.io.*;
-import java.net.URL;
-import java.text.MessageFormat;
-import java.text.NumberFormat;
-import java.text.SimpleDateFormat;
-import java.util.*;
-import java.util.prefs.*;
-import javax.sound.sampled.*;
+import micropolisj.engine.*;
+import micropolisj.util.TranslationTool;
+
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
 import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
-
-import micropolisj.engine.*;
-import micropolisj.util.TranslationTool;
+import java.awt.*;
+import java.awt.event.*;
+import java.io.File;
+import java.io.IOException;
+import java.io.PrintWriter;
+import java.io.StringWriter;
+import java.net.URL;
+import java.text.MessageFormat;
+import java.text.NumberFormat;
+import java.util.*;
+import java.util.prefs.Preferences;
 
 public class MainWindow extends JFrame
 	implements Micropolis.Listener, EarthquakeListener
@@ -58,7 +61,7 @@ public class MainWindow extends JFrame
 		appIcon = new ImageIcon(MainWindow.class.getResource("/micropolism.png"));
 	}
 
-	static ResourceBundle strings = ResourceBundle.getBundle("micropolisj.GuiStrings");
+	static ResourceBundle strings = ResourceBundle.getBundle("i18n.GuiStrings");
 	static final String PRODUCT_NAME = strings.getString("PRODUCT");
 
 	public MainWindow()

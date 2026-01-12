@@ -8,13 +8,15 @@
 
 package micropolisj.gui;
 
-import java.awt.*;
-import java.awt.event.*;
-import java.text.*;
-import java.util.*;
-import javax.swing.*;
-
 import micropolisj.engine.*;
+
+import javax.swing.*;
+import java.awt.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.text.NumberFormat;
+import java.util.ResourceBundle;
+
 import static micropolisj.gui.MainWindow.formatFunds;
 
 public class EvaluationPane extends JPanel
@@ -34,7 +36,7 @@ public class EvaluationPane extends JPanel
 	JLabel scoreLbl;
 	JLabel scoreDeltaLbl;
 
-	static ResourceBundle cstrings = ResourceBundle.getBundle("micropolisj.CityStrings");
+	static ResourceBundle cstrings = ResourceBundle.getBundle("i18n.CityStrings");
 	static ResourceBundle gstrings = MainWindow.strings;
 
 	public EvaluationPane(Micropolis _engine)

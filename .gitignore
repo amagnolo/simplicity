@@ -1,13 +1,7 @@
-build
-*.jar
-docs/api
-graphics/generated
-.*.swp
-
+target/
 .idea/
 .vscode/
 .settings
 .project
 .classpath
 *.iml
-out/

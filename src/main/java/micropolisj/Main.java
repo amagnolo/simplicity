@@ -8,9 +8,9 @@
 
 package micropolisj;
 
-import javax.swing.*;
-
 import micropolisj.gui.MainWindow;
+
+import javax.swing.*;
 
 public class Main
 {

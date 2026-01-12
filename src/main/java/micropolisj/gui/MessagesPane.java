@@ -8,15 +8,16 @@
 
 package micropolisj.gui;
 
-import java.util.*;
-import javax.swing.*;
-import javax.swing.text.*;
+import micropolisj.engine.MicropolisMessage;
 
-import micropolisj.engine.*;
+import javax.swing.*;
+import javax.swing.text.BadLocationException;
+import javax.swing.text.StyledDocument;
+import java.util.ResourceBundle;
 
 public class MessagesPane extends JTextPane
 {
-	static ResourceBundle cityMessageStrings = ResourceBundle.getBundle("micropolisj.CityMessages");
+	static ResourceBundle cityMessageStrings = ResourceBundle.getBundle("i18n.CityMessages");
 
 	public MessagesPane()
 	{
