@@ -3,3 +3,11 @@ build
 docs/api
 graphics/generated
 .*.swp
+
+.idea/
+.vscode/
+.settings
+.project
+.classpath
+*.iml
+out/
