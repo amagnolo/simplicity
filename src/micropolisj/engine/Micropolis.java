@@ -8,15 +8,13 @@
 
 package micropolisj.engine;
 
+import micropolisj.XML_Helper;
+
+import javax.xml.stream.*;
 import java.io.*;
 import java.util.*;
-
-// for XML load/save
 import java.util.zip.GZIPInputStream;
 import java.util.zip.GZIPOutputStream;
-import javax.xml.stream.*;
-
-import micropolisj.XML_Helper;
 
 import static micropolisj.engine.TileConstants.*;
 
@@ -103,9 +101,9 @@ public class Micropolis
 
 	public final CityBudget budget = new CityBudget(this);
 	public boolean autoBulldoze = true;
-	public boolean autoBudget = false;
+	public boolean autoBudget = true;
 	public Speed simSpeed = Speed.NORMAL;
-	public boolean noDisasters = false;
+	public boolean noDisasters = true;
 
 	public int gameLevel;
 
