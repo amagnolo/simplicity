@@ -1,0 +1,159 @@
+= SimCity: A Player's Guide
+:author: Adapted from the Maxis manual (1989-1993)
+:toc: left
+:toc-title: Contents
+:sectnums:
+:icons: font
+
+== What SimCity Is
+
+SimCity is the founder of a genre the manual itself names _system simulation_: the game doesn't ask you to "win" in the traditional sense, it hands you a set of rules and tools and puts a system -- a city -- in front of you to understand and govern.
+
+You are mayor and city planner at once, with full authority. The city is populated by _Sims_ -- simulated citizens who build houses, stores and factories in the zones you lay out. They complain (about taxes, traffic, crime, you) and, if they get too unhappy, they leave. When they leave you collect less tax revenue and the city decays.
+
+The challenge isn't pressing a button to win: it's figuring out how the system works and taking control of it.
+
+== The Goal of the Game
+
+There are two main ways to play, and neither has a mandatory final score.
+
+*Your dream city.* The main goal of SimCity is to design, manage and maintain the city you'd want to live in. It can be a dense megalopolis crammed with skyscrapers and traffic, or a network of small rural towns. The only real rule is that the city has to provide places to live, work, shop and play -- and it has to avoid driving people away with traffic, pollution, overcrowding, crime or excessive taxes.
+
+*The scenarios.* Eight scenarios based on real cities (San Francisco 1906, Tokyo 1957, Detroit 1972, Boston 2010, Rio 2047, and so on) put you in front of an impending disaster or a chronic problem (crime, traffic, boredom). You have a limited amount of time to fix things: succeed and you get the key to the city, fail and you get run out of town.
+
+In both cases, the real measure is the _City Score_ in the evaluation window, computed from crime, pollution, housing costs, taxes, traffic, unemployment, service coverage and growth rate. A huge population isn't enough on its own: a small, self-sustaining, pleasant city scores higher than a sprawling metropolis perpetually in the red.
+
+== How the City Works
+
+=== The Three Zones
+
+The city rests on three pillars, embodied by three kinds of zone:
+
+*Residential zones [R].* Where the Sims live. They build houses, condos, schools, churches and hospitals. They are the workforce for the other two zones.
+
+*Industrial zones [I].* Warehouses, factories, refineries. They produce for the _external market_ -- they sell outside the city and bring money in. They pollute and they're ugly: keep them away from where people live.
+
+*Commercial zones [C].* Stores, offices, banks, gas stations. They serve the _internal market_, which is the Sims themselves.
+
+All three need to be on the power grid in order to develop, and they have to be connected by roads or rails -- otherwise the Sims can't reach them and they move out.
+
+=== The Two Markets
+
+Industry only grows if the external market grows (and the external market is controlled by the simulation, not by you). Commerce, on the other hand, grows with the internal market: the more Sims you have, the more they consume, the more the stores prosper.
+
+Early on you need more industrial zones than commercial ones: industry generates the income that attracts new residents. As the city gets larger, though, the internal commercial economy accelerates and eventually overtakes industry as the main engine. That tipping point is when a sleepy town of 50,000 can become a thriving capital of 200,000 in just a few years.
+
+=== Power, Roads, Transit
+
+Every zone needs power. Power propagates between adjacent zones, so you don't have to run a wire to every single building -- one connection to the grid is enough. A zone that loses power stops developing, and if the outage lasts, it regresses.
+
+There are two kinds of plant: coal (\$3,000, powers about 50 zones, pollutes) and nuclear (\$5,000, powers about 150 zones, minimal pollution but a small risk of _meltdown_).
+
+For internal transit you have roads and rails. Roads are cheap but generate traffic and saturate quickly; rails cost more but carry far more volume and don't produce pollution. In an area you expect to be busy, it pays to lay rails from the start instead of replacing roads later.
+
+=== Taxes and Budget
+
+The property tax rate ranges from 0% to 20%. Three reference bands:
+
+* 5-7%: fast growth (the optimal range).
+* 8-9%: slow growth, a roughly stable city.
+* 10% and above: high revenue short-term, but population falls and revenue falls with it.
+
+The annual budget asks you to fund three departments: police, fire and transportation. You can cut, but below 100% the services degrade: police cover less area, firefighters respond worse, roads deteriorate (below 75% they fall apart fast).
+
+One important difference from real life: SimCity doesn't allow deficits. If you don't have the money, you can't spend it. Watch the _cash flow_ (taxes collected minus maintenance costs): if it stays negative for long, you're building more infrastructure than the city can support.
+
+=== Pollution, Crime, Land Value
+
+These are three interlocking indicators that decide whether the city thrives or decays.
+
+*Pollution* is generated mostly by industry and traffic. It lowers land value and drives residents away. You fight it by separating industry from residences, replacing roads with rails, and limiting industrial expansion.
+
+*Crime* rises where population density is high and land value is low. You fight it with police stations and, in the long run, by raising land value (more greenery, less pollution, better access).
+
+*Land value* depends on surrounding terrain (trees, parks and natural water raise it), accessibility, pollution, and distance from downtown. It's the basis for tax revenue: high-value land means more taxes.
+
+== How to Play: The Basic Loop
+
+When you start a new city you pick a name and a difficulty level (Easy, Medium, Hard -- you can't change it later). Then you're in front of a map of empty land, trees and water.
+
+The minimum cycle to get any city going is this:
+
+. Bulldoze some forest to create open land.
+. Place a few residential zones [R] -- this is where the Sims will live.
+. Place a power plant (coal, since it's the only one you can afford early on) close enough, or run wires to it.
+. Add some commercial [C] and industrial [I] zones near the residences.
+. Lay roads to connect homes and workplaces: without road or rail access, zones don't develop.
+. Wait. You'll see small houses appear, then larger buildings as the zone fills in.
+
+From that point the game is about iterating: the maps window shows you in real time where the pollution is, where the crime is, where there's no power, where traffic is jammed. The graphs window shows long-term trends (pollution that creeps up a tiny bit each year is invisible on a map but obvious on a 50-year graph).
+
+Every simulated year the budget window opens: set the rate, decide how much to fund police/fire/transport, carry on.
+
+== Strategy: How to Get the Best Results
+
+=== General Principles
+
+*Grow slow.* This is the manual's number-one piece of advice. Every road, every rail, every bridge has an annual maintenance cost. Building too many before the city generates enough taxes pushes cash flow negative and stalls everything.
+
+*Balance R, C and I.* As a rule of thumb, residential zones should be roughly equal to commercial plus industrial combined. When the city is small you need more industry than commerce; when it's large, the reverse. Too many homes without jobs and the Sims leave; too much industry without homes and the factories sit empty.
+
+*Separate residential and industrial.* Industry pollutes and lowers the land value around it. Keep it away from residential neighborhoods, ideally with a buffer of parks or water that absorbs the impact.
+
+*Use the natural landscape.* Forest, parks and natural water raise land value. Every tree you bulldoze is tax revenue you give up. It costs almost nothing to build around a forest instead of clearing it. A natural shoreline is worth more than a landfill one.
+
+*Save often.* Especially before trying out a new policy or unleashing a disaster as a drill. If it goes badly, you reload and no one's the wiser.
+
+=== Land Management
+
+*Group your zones.* Four or five zones in a row, all touching, share the same power lines: you save a lot compared to scattered zones.
+
+*Plan before you build.* Open the map, decide where the downtown should be, where the high-end residential neighborhoods (near water), where the bridges, where the big industrial belts. Printing the map and sketching on it with a pencil saves a lot of corrective bulldozing.
+
+*Zones don't move.* Misplace one and you have to pay to bulldoze and rebuild. Think twice before confirming.
+
+=== Transit
+
+*Rails where you expect heavy traffic.* They carry far more than roads and don't pollute. A city can even be built entirely without roads, just rails -- it's a valid design choice.
+
+*Roads have to be adjacent to the zone.* A zone that doesn't touch a road or rail isn't connected to the traffic network, and the Sims can't reach it. Power flows through adjacent zones, but traffic doesn't.
+
+*More than one route.* A single main artery clogs; two or three parallel ones spread the load.
+
+=== Public Services
+
+*Police and fire only where they're needed.* They cost \$500 to build and \$100 a year. Use the crime map to decide where to put police stations, and the services map to see their actual radius of effect. Blanketing the whole city with them is a waste.
+
+*Stadium, seaport, airport only when you're large.* Stadiums encourage residential growth only once the city is already a decent size. Seaports help industry in big cities. Airports help commerce when commercial growth would otherwise plateau. All three are expensive and in a small city they're wasted money. Wait: the Sims will tell you when they want them.
+
+*Redundant power.* A single power plant is a single point of failure: one disaster or accident and half the city loses power and starts decaying. A second plant and a few redundant lines save you in an emergency.
+
+=== Disasters
+
+The disasters (fires, floods, earthquakes, tornadoes, monsters, nuclear meltdowns) are part of the game and become more frequent at higher difficulty levels. You can also disable them from the menu, but that takes half the fun out of it.
+
+General strategies:
+
+* *Fires* don't cross water or cleared land. If you don't have enough firefighters, isolate the fire with the bulldozer by clearing a band of bare ground around it: it'll burn itself out.
+* For *air crashes*, position the airport so flight paths run over water, not over downtown.
+* A *nuclear meltdown* permanently contaminates the area: it's worth building nuclear plants at the edges of the map.
+* *Monsters* are triggered by high pollution. Keep pollution low and the risk drops.
+
+=== Reading the Signals
+
+The evaluation window, once a year, tells you what the Sims think of you and what the main problems are. It's the fastest way to figure out where to act. The most typical complaint-to-fix mappings:
+
+* Traffic: replace stretches of road with rail.
+* Crime: add police stations, or raise land value.
+* Pollution: move or shrink industry, replace roads with rails.
+* Unemployment: zone more commercial and industrial areas.
+* Housing costs: zone more residences in low-value areas.
+* Taxes: lower the rate (if you can afford to).
+
+If more than 55% of the Sims think you're doing a good job, your seat is safe. If a problem is flagged by 10% or fewer, it's not yet critical.
+
+== A Good City Isn't the Biggest One
+
+The manual closes with a thought worth keeping: a big city isn't automatically a successful one. A small, self-sustaining city with intact forests and a view of the sea is worth more than a sprawling megalopolis perpetually in the red and choking on smog. The City Score reflects this: the _city growth rate_ is just one of the factors, and a city that has been deliberately kept small -- for environmental or aesthetic reasons -- will score slightly lower without being a failure.
+
+In other words: decide what kind of mayor you want to be before asking yourself how to win.

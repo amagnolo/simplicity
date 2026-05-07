@@ -1,0 +1,159 @@
+= SimCity: guida al gioco
+:author: Adattato dal manuale Maxis (1989-1993)
+:toc: left
+:toc-title: Indice
+:sectnums:
+:icons: font
+
+== Cos'è SimCity
+
+SimCity è il capostipite di un genere che il manuale stesso battezza _system simulation_: il gioco non ti chiede di "vincere" nel senso tradizionale, ma ti consegna un insieme di regole e di strumenti e ti mette davanti a un sistema - una città - da capire e governare.
+
+Sei contemporaneamente sindaco e urbanista, con autorità totale. La città è popolata dai _Sims_, cittadini simulati che costruiscono case, negozi e fabbriche nelle zone che hai definito. Si lamentano (di tasse, traffico, criminalità, di te) e, se sono troppo scontenti, se ne vanno. Quando se ne vanno tu incassi meno tasse e la città decade.
+
+La sfida non è quindi spingere un pulsante per vincere: è capire come funziona il sistema e prendere il controllo.
+
+== L'obiettivo del gioco
+
+Esistono due modi principali di giocare, e nessuno dei due ha un punteggio finale obbligatorio.
+
+*La città dei tuoi sogni.* L'obiettivo principale di SimCity è progettare, gestire e mantenere la città che vorresti abitare. Può essere una megalopoli densa, piena di grattacieli e traffico, o una rete di piccoli centri rurali. L'unica vera regola è che la città deve fornire posti dove vivere, lavorare, fare acquisti e divertirsi -- e non deve cacciare via gli abitanti con traffico, inquinamento, sovraffollamento, criminalità o tasse troppo alte.
+
+*Gli scenari.* Otto scenari basati su città reali (San Francisco 1906, Tokyo 1957, Detroit 1972, Boston 2010, Rio 2047, eccetera) ti mettono davanti a un disastro imminente o a un problema cronico (criminalità, traffico, noia). Hai un tempo limitato per rimettere le cose a posto: se ci riesci ti danno la chiave della città, altrimenti vieni cacciato.
+
+In entrambi i casi, il vero metro di giudizio è il _City Score_ nella finestra di valutazione, calcolato su criminalità, inquinamento, costo della vita, tasse, traffico, disoccupazione, copertura dei servizi e tasso di crescita. Una popolazione enorme non basta: una città piccola, autosufficiente e piacevole vale più di una megalopoli sempre in rosso.
+
+== Come funziona la città
+
+=== Le tre zone
+
+La città vive su tre pilastri, simboleggiati da tre tipi di zona:
+
+*Zone residenziali [R].* Dove vivono i Sims. Costruiscono case, condomini, scuole, chiese e ospedali. Sono la forza lavoro per le altre due zone.
+
+*Zone industriali [I].* Magazzini, fabbriche, raffinerie. Producono per il _mercato esterno_ -- cioè vendono fuori dalla città e fanno entrare denaro. Inquinano e sono brutte da vedere: vanno tenute lontane dalle residenze.
+
+*Zone commerciali [C].* Negozi, uffici, banche, distributori. Servono il _mercato interno_, cioè i Sims stessi.
+
+Tutte e tre devono essere alimentate dalla rete elettrica per svilupparsi, e devono essere collegate da strade o ferrovie perché altrimenti i Sims non possono raggiungerle e si trasferiscono altrove.
+
+=== I due mercati
+
+L'industria cresce solo se cresce il mercato esterno (controllato dalla simulazione, non da te). Il commercio invece cresce in funzione del mercato interno: più Sims hai, più consumano, più i negozi prosperano.
+
+All'inizio della tua città servono più zone industriali che commerciali: l'industria genera reddito che attira nuovi residenti. Quando la città diventa grande, però, il commercio interno accelera e finisce per superare l'industria come motore economico. Quel momento di svolta è quando una piccola città da 50.000 abitanti può trasformarsi in una capitale da 200.000 in pochi anni.
+
+=== Energia, strade, trasporti
+
+Ogni zona ha bisogno di corrente. La corrente si propaga tra zone adiacenti, quindi non devi tirare un cavo per ogni edificio: basta un collegamento alla griglia. Una zona senza corrente smette di svilupparsi e, se la cosa dura, regredisce.
+
+Esistono due tipi di centrale: a carbone (3.000$, alimenta circa 50 zone, inquina) e nucleare (5.000$, alimenta circa 150 zone, inquinamento minimo ma piccolo rischio di _meltdown_).
+
+Per il trasporto interno hai strade e ferrovie. Le strade sono economiche ma generano traffico e si saturano in fretta; le ferrovie costano di più ma trasportano molto più volume e non producono inquinamento. In una zona che prevedi affollata, vale la pena posare ferrovie fin da subito invece di sostituire le strade dopo.
+
+=== Tasse e bilancio
+
+L'aliquota sulle proprietà va da 0% a 20%. Tre fasce di riferimento:
+
+* 5-7%: crescita rapida (è l'intervallo ottimale).
+* 8-9%: crescita rallentata, città più o meno stabile.
+* 10% e oltre: nel breve incassi tanto, nel lungo la popolazione cala e con essa le entrate.
+
+Il bilancio annuale ti chiede di finanziare tre dipartimenti: polizia, vigili del fuoco e trasporti. Puoi tagliare, ma sotto il 100% i servizi rendono di meno: la polizia copre meno area, i pompieri intervengono peggio, le strade si deteriorano (sotto il 75% si rovinano in fretta).
+
+Una differenza importante con la realtà: SimCity non permette il deficit. Se non hai i soldi non puoi spendere. Tieni d'occhio il _cash flow_ (tasse incassate meno costi di mantenimento): se è negativo a lungo, stai costruendo infrastruttura più grande di quella che la città riesce a sostenere.
+
+=== Inquinamento, criminalità, valore del terreno
+
+Sono tre indicatori interconnessi che decidono se la città prospera o decade.
+
+L'*inquinamento* è prodotto soprattutto da industria e traffico. Riduce il valore del terreno e fa scappare i residenti. Si combatte separando l'industria dalle residenze, sostituendo strade con ferrovie e limitando l'espansione industriale.
+
+La *criminalità* cresce dove la densità di popolazione è alta e il valore del terreno è basso. Si combatte con stazioni di polizia e, sul lungo periodo, alzando il valore del terreno (più verde, meno inquinamento, accessibilità migliore).
+
+Il *valore del terreno* dipende da terreno circostante (alberi, parchi, acqua naturale lo alzano), accessibilità, inquinamento e distanza dal centro. È la base su cui si calcolano le tasse: terreno di pregio = più gettito.
+
+== Come giocare: il flusso base
+
+Quando avvii una nuova città scegli nome e livello di difficoltà (Easy, Medium, Hard -- non si può cambiare in corsa). Poi sei davanti a una mappa di terreno vuoto, alberi e acqua.
+
+Il ciclo minimo per far partire qualsiasi città è questo:
+
+. Spiana qualche area di foresta con il bulldozer per avere terreno libero.
+. Posiziona qualche zona residenziale [R] -- è dove vivranno i Sims.
+. Posiziona una centrale elettrica (a carbone, all'inizio è l'unica che ti puoi permettere) abbastanza vicino, oppure collegala con cavi.
+. Aggiungi qualche zona commerciale [C] e industriale [I] vicino alle residenze.
+. Posa strade per collegare residenze e luoghi di lavoro: senza accesso stradale o ferroviario le zone non si sviluppano.
+. Aspetta. Vedrai apparire piccole case, poi edifici più grandi man mano che la zona si popola.
+
+Da qui in avanti il gioco è iterare: la finestra delle mappe ti mostra in tempo reale dove c'è inquinamento, dove c'è criminalità, dove manca corrente, dove il traffico è saturo. La finestra dei grafici ti fa vedere le tendenze sul lungo periodo (l'inquinamento che sale di poco ogni anno non si nota in mappa, ma in 50 anni di grafico sì).
+
+Ogni anno simulato si apre la finestra del bilancio: imposti l'aliquota, decidi quanto finanziare polizia/pompieri/strade, e prosegui.
+
+== Strategia: come ottenere i migliori risultati
+
+=== Principi generali
+
+*Cresci piano.* È il consiglio numero uno del manuale. Ogni strada, ogni rotaia, ogni ponte ha un costo annuale di mantenimento. Costruirne troppi prima che la città generi abbastanza tasse manda il cash flow in negativo e blocca tutto.
+
+*Bilancia residenziale, commerciale e industriale.* Come regola pratica, le zone residenziali devono essere circa pari alla somma di commerciali e industriali. Quando la città è piccola servono più zone industriali che commerciali; quando diventa grande, l'inverso. Un eccesso di residenze senza lavoro fa scappare i Sims; un eccesso di industria senza residenze ti lascia con fabbriche vuote.
+
+*Separa residenze e industria.* L'industria inquina e abbassa il valore del terreno intorno. Tienila lontana dai quartieri residenziali, magari oltre una fascia di parchi o di acqua che assorba il colpo.
+
+*Sfrutta la natura.* Bosco, parchi, acqua naturale alzano il valore del terreno. Ogni albero che butti giù è gettito fiscale che perdi. Costa pochissimo costruire intorno a un bosco invece che raderlo al suolo. Un litorale naturale rende più di una bonifica artificiale.
+
+*Salva spesso.* Specialmente prima di provare una nuova politica radicale o di scatenare un disastro per fare esercitazione. Se va male, ricarichi e nessuno se ne accorge.
+
+=== Gestione del territorio
+
+*Raggruppa le zone.* Quattro o cinque zone in fila che si toccano condividono i cavi elettrici: risparmi parecchio rispetto a zone sparse.
+
+*Pianifica prima di costruire.* Apri la mappa, decidi dove vuoi il centro, dove i quartieri residenziali di pregio (vicino all'acqua), dove i ponti, dove le grandi aree industriali. Stampare la mappa e disegnarci sopra a matita evita un sacco di abbattimenti correttivi.
+
+*Le zone non si spostano.* Se sbagli a piazzarle devi pagare il bulldozer e ricostruire. Pensa due volte prima di confermare.
+
+=== Trasporti
+
+*Ferrovie nei punti di traffico previsto.* Trasportano molto più delle strade e non inquinano. Una città può anche essere costruita interamente senza strade, solo con rotaie -- è una scelta di design valida.
+
+*Le strade vanno adiacenti alle zone.* Una zona che non tocca una strada o una rotaia non è collegata al traffico, e i Sims non possono raggiungerla. L'energia si trasmette attraverso le zone adiacenti, ma il traffico no.
+
+*Più percorsi alternativi.* Una sola arteria principale si ingorga; due o tre paralleli distribuiscono il carico.
+
+=== Servizi pubblici
+
+*Polizia e pompieri solo dove servono.* Costano 500$ a costruire e 100$ all'anno. Usa la mappa della criminalità per decidere dove mettere le stazioni di polizia, e quella dei servizi per vedere il loro raggio d'azione effettivo. Costruirle a tappeto in tutta la città è uno spreco.
+
+*Stadio, porto, aeroporto solo da grande.* Lo stadio incentiva la crescita residenziale solo quando la città è già di dimensioni discrete. Il porto serve all'industria nelle città grandi. L'aeroporto serve al commercio quando la crescita commerciale altrimenti si fermerebbe. Tutti e tre sono costosi e in una piccola città sono soldi sprecati. Aspetta: i Sims te li chiederanno quando saranno il momento.
+
+*Centrali ridondanti.* Una sola centrale è un punto di rottura: un disastro o un guasto le toglie corrente a mezza città, che inizia a degradare. Una seconda centrale e qualche linea ridondante ti salvano in caso di emergenza.
+
+=== Disastri
+
+I disastri (incendi, alluvioni, terremoti, tornado, mostri, meltdown nucleari) sono parte del gioco e diventano più frequenti ai livelli di difficoltà alti. Si possono anche disabilitare dal menu, ma toglie metà del divertimento.
+
+Strategie generali:
+
+* Gli *incendi* non attraversano acqua né terreno spianato. Se non hai abbastanza pompieri, isola il fuoco con il bulldozer creando una fascia di terreno nudo intorno: si spegnerà da solo.
+* Per i *crash aerei*, posiziona l'aeroporto in modo che le rotte passino sopra l'acqua, non sopra il centro città.
+* Il *meltdown* nucleare contamina permanentemente l'area: vale la pena costruire le centrali nucleari ai bordi della mappa.
+* I *mostri* sono provocati da inquinamento alto. Tieni l'inquinamento basso e il rischio cala.
+
+=== Lettura dei segnali
+
+La finestra di valutazione una volta l'anno ti dice cosa pensano i Sims di te e quali sono i problemi principali. È il modo più rapido di capire dove intervenire. Le corrispondenze più tipiche fra lamentela e cura sono:
+
+* Traffico: sostituisci tratti di strada con ferrovia.
+* Criminalità: aggiungi stazioni di polizia, oppure alza il valore del terreno.
+* Inquinamento: sposta o riduci l'industria, sostituisci strade con rotaie.
+* Disoccupazione: zona più aree commerciali e industriali.
+* Costo delle case: zona più residenze in aree a basso valore.
+* Tasse: abbassa l'aliquota (se puoi).
+
+Se più del 55% dei Sims pensa che stai facendo un buon lavoro, il tuo posto è al sicuro. Se un problema è segnalato dal 10% o meno, non è ancora critico.
+
+== Una buona città non è la più grande
+
+Il manuale chiude con una riflessione che vale la pena riprendere: una città grande non è automaticamente una città riuscita. Una città piccola, autosufficiente, con boschi intatti e vista sul mare, vale più di una megalopoli perennemente in rosso e annegata nello smog. Il punteggio della città lo riflette: il _city growth rate_ è solo uno dei fattori, e una città cresciuta lentamente per scelta -- per ragioni ambientali o estetiche -- avrà un punteggio leggermente più basso, ma non per questo è una città fallita.
+
+In altre parole: scegli che tipo di sindaco vuoi essere prima di chiederti come vincere.
