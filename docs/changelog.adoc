@@ -4,6 +4,7 @@
 
 * fixed city loading
 * user docs
+* add and store startup options: UI scaling and locale selection
 
 == 0.1 (2026-01-17)
 

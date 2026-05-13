@@ -61,6 +61,6 @@ Key concepts:
 
 ## Conventions worth knowing
 
-- Engine files preserve the original GPLv3 / EA copyright headers — keep them when editing existing files; new files in the same packages should match.
+- Engine files preserve the original GPLv3 / EA copyright headers — keep them when editing existing files.
 - The simulation runs on the Swing EDT (`Main.main` schedules everything via `SwingUtilities.invokeLater`); engine mutations from background threads are not safe.
 - Half-resolution and quarter-resolution overlay arrays in `Micropolis` are indexed `[y/2][x/2]` and `[y/4][x/4]` respectively — read the field-level Javadoc in `Micropolis.java` before touching them.

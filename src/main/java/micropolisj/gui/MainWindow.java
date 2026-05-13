@@ -579,6 +579,48 @@ public class MainWindow extends JFrame
 			}));
 		optionsMenu.add(soundsMenuItem);
 
+		JMenu uiScaleMenu = new JMenu(strings.getString("menu.options.ui_scale"));
+		setupKeys(uiScaleMenu, "menu.options.ui_scale");
+		ButtonGroup uiScaleGroup = new ButtonGroup();
+		uiScaleMenuItems = new HashMap<String,JMenuItem>();
+		for (String scale : UiScale.getSupportedValues())
+		{
+			final String scale1 = scale;
+			menuItem = new JRadioButtonMenuItem(formatUiScale(scale));
+			menuItem.addActionListener(wrapActionListener(
+				new ActionListener() {
+				public void actionPerformed(ActionEvent ev)
+				{
+					onUiScaleClicked(scale1);
+				}
+				}));
+			uiScaleGroup.add(menuItem);
+			uiScaleMenu.add(menuItem);
+			uiScaleMenuItems.put(scale, menuItem);
+		}
+		optionsMenu.add(uiScaleMenu);
+
+		JMenu localeMenu = new JMenu(strings.getString("menu.options.locale"));
+		setupKeys(localeMenu, "menu.options.locale");
+		ButtonGroup localeGroup = new ButtonGroup();
+		localeMenuItems = new HashMap<String,JMenuItem>();
+		for (String locale : AppLocale.getSupportedValues())
+		{
+			final String locale1 = locale;
+			menuItem = new JRadioButtonMenuItem(formatLocale(locale));
+			menuItem.addActionListener(wrapActionListener(
+				new ActionListener() {
+				public void actionPerformed(ActionEvent ev)
+				{
+					onLocaleClicked(locale1);
+				}
+				}));
+			localeGroup.add(menuItem);
+			localeMenu.add(menuItem);
+			localeMenuItems.put(locale, menuItem);
+		}
+		optionsMenu.add(localeMenu);
+
 		menuItem = new JMenuItem(strings.getString("menu.options.zoom_in"));
 		setupKeys(menuItem, "menu.options.zoom_in");
 		menuItem.addActionListener(wrapActionListener(
@@ -809,6 +851,8 @@ public class MainWindow extends JFrame
 	JMenuItem soundsMenuItem;
 	Map<Speed,JMenuItem> priorityMenuItems;
 	Map<Integer,JMenuItem> difficultyMenuItems;
+	Map<String,JMenuItem> uiScaleMenuItems;
+	Map<String,JMenuItem> localeMenuItems;
 
 	private void onAutoBudgetClicked()
 	{
@@ -835,6 +879,63 @@ public class MainWindow extends JFrame
 		Preferences prefs = Preferences.userNodeForPackage(MainWindow.class);
 		prefs.putBoolean(SOUNDS_PREF, doSounds);
 		reloadOptions();
+	}
+
+	private void onUiScaleClicked(String scale)
+	{
+		if (UiScale.getPreference().equals(scale)) {
+			return;
+		}
+
+		UiScale.setPreference(scale);
+		reloadOptions();
+		JOptionPane.showMessageDialog(
+			this,
+			MessageFormat.format(
+				strings.getString("main.ui_scale_restart"),
+				formatUiScale(scale)
+				),
+			PRODUCT_NAME,
+			JOptionPane.INFORMATION_MESSAGE
+			);
+	}
+
+	private String formatUiScale(String scale)
+	{
+		if (scale.equals(UiScale.AUTO)) {
+			return strings.getString("menu.options.ui_scale.auto");
+		}
+		return MessageFormat.format(
+			strings.getString("menu.options.ui_scale.percent"),
+			UiScale.getPercentage(scale)
+			);
+	}
+
+	private void onLocaleClicked(String locale)
+	{
+		if (AppLocale.getPreference().equals(locale)) {
+			return;
+		}
+
+		AppLocale.setPreference(locale);
+		reloadOptions();
+		JOptionPane.showMessageDialog(
+			this,
+			MessageFormat.format(
+				strings.getString("main.locale_restart"),
+				formatLocale(locale)
+				),
+			PRODUCT_NAME,
+			JOptionPane.INFORMATION_MESSAGE
+			);
+	}
+
+	private String formatLocale(String locale)
+	{
+		if (locale.equals(AppLocale.AUTO)) {
+			return strings.getString("menu.options.locale.auto");
+		}
+		return strings.getString("menu.options.locale."+locale);
 	}
 
 	void makeClean()
@@ -1594,6 +1695,8 @@ public class MainWindow extends JFrame
 		autoBulldozeMenuItem.setSelected(getEngine().autoBulldoze);
 		disastersMenuItem.setSelected(!getEngine().noDisasters);
 		soundsMenuItem.setSelected(doSounds);
+		uiScaleMenuItems.get(UiScale.getPreference()).setSelected(true);
+		localeMenuItems.get(AppLocale.getPreference()).setSelected(true);
 		for (Speed spd : priorityMenuItems.keySet())
 		{
 			priorityMenuItems.get(spd).setSelected(getEngine().simSpeed == spd);

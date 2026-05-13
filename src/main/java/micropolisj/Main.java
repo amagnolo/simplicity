@@ -8,7 +8,9 @@
 
 package micropolisj;
 
+import micropolisj.gui.AppLocale;
 import micropolisj.gui.MainWindow;
+import micropolisj.gui.UiScale;
 
 import javax.swing.*;
 
@@ -23,6 +25,8 @@ public class Main
 
 	public static void main(String [] args)
 	{
+		AppLocale.applySavedLocale();
+		UiScale.applySavedScale();
 		SwingUtilities.invokeLater(new Runnable() {
 		public void run() {
 			createAndShowGUI();
