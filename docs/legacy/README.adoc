@@ -1,0 +1,16 @@
+= Legacy documentation
+
+This directory contains historical documentation preserved from the original
+MicropolisJ project.
+
+These files are retained for attribution, licensing history and project
+provenance. They may mention old project names, old Java versions, old jar
+names, old contact details or build instructions that no longer apply to
+SimpliCity.
+
+For current build and run instructions, use the root `README.md`.
+
+== Files
+
+* `MicropolisJ-README` - the original root README from MicropolisJ, including
+  original copyright notices and additional GPL section 7 terms.

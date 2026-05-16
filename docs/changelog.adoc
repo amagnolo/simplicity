@@ -3,9 +3,12 @@
 == [unreleased]
 
 * fixed city loading
-* user docs
-* add and store startup options: UI scaling and locale selection
+* player guides
+* user settings for UI scaling and locale selection
 
 == 0.1 (2026-01-17)
 
 * modernization: java 25, maven
+* graphics improvements, reduced dithering
+* new defaults: auto budget, disable disasters
+* add Italian localization
