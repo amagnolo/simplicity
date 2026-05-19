@@ -1,8 +1,11 @@
 # SimpliCity
 
-SimpliCity is a city simulation game rooted in the original SimCity, with small improvements and a focus on simplicity. It is an open source fork of MicropolisJ, the Java/Swing port of Micropolis.
+_SimpliCity_ is a city simulation game rooted in the original SimCity, with small improvements and a focus on simplicity. It is an open source fork of MicropolisJ, the Java/Swing port of Micropolis.
 
 You build a city, zone land for homes, commerce and industry, connect it with roads, rails and power, then manage taxes, services, traffic, pollution and growth. The game is intentionally closer to a quiet toy and simulation than to a modern always-engaging management game.
+
+> [!TIP]
+> If you just want to play the game, [visit the website](https://amagnolo.github.io/simplicity/). For technical details, keep reading. 
 
 ## About this project: purpose and goals
 
