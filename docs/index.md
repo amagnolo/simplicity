@@ -4,14 +4,13 @@
 
 SimpliCity is a small, classic city simulation game about building a place and watching it breathe. It is free, open source, and built upon the original 1989 game Micropolis (AKA [SimCity Classic](https://en.wikipedia.org/wiki/SimCity_(1989_video_game))).
 
+![SimpliCity game screenshot](images/screenshot.png)
+
 Zone homes, shops and factories. Lay roads and rails. Bring power to new neighborhoods. Balance growth, traffic, pollution, services and money. Then let the city run, slow down, adjust, and see what happens.
 
 SimpliCity is made for relaxed play, not constant attention.
 
 > [Download the game!](https://github.com/amagnolo/simplicity/releases)
-
-
-![SimpliCity game screenshot](images/screenshot.png)
 
 ## Not every city builder is made the same
 

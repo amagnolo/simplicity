@@ -1,5 +1,5 @@
-remote_theme: pages-themes/cayman@v0.2.0
-#remote_theme: pages-themes/leap-day@v0.2.0
+#remote_theme: pages-themes/cayman@v0.2.0
+remote_theme: pages-themes/leap-day@v0.2.0
 
 title: SimpliCity city simulation game rooted in the original SimCity
 description: A quieter offline city-building game for relaxed play. Build, watch, adjust, and enjoy a classic simulation without pressure or addictive loops.
