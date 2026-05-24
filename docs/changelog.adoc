@@ -3,8 +3,12 @@
 == [unreleased]
 
 * fixed city loading
-* player guides
 * user settings for UI scaling and locale selection
+* localized currency
+* docs:
+** player guides inspired by SimCity manual
+** website in GitHub Pages
+** README in project root
 
 == 0.1 (2026-01-17)
 
