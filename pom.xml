@@ -22,6 +22,7 @@
 					<archive>
 						<manifest>
 							<mainClass>micropolisj.Main</mainClass>
+							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 					</archive>
 				</configuration>

@@ -16,17 +16,25 @@ import javax.sound.sampled.Clip;
 import javax.swing.*;
 import javax.swing.Timer;
 import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.awt.event.*;
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
 import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.prefs.Preferences;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 public class MainWindow extends JFrame
 	implements Micropolis.Listener, EarthquakeListener
@@ -63,6 +71,8 @@ public class MainWindow extends JFrame
 
 	static ResourceBundle strings = ResourceBundle.getBundle("i18n.GuiStrings");
 	static final String PRODUCT_NAME = strings.getString("PRODUCT");
+	private static final String MAVEN_POM_PROPERTIES = "/META-INF/maven/micropolisj/SimpliCity/pom.properties";
+	private static final String UNKNOWN_VERSION = "unknown";
 
 	public MainWindow()
 	{
@@ -1829,9 +1839,158 @@ public class MainWindow extends JFrame
 		}
 	}
 
+	private static String getApplicationVersion()
+	{
+		String version = normalizeVersion(MainWindow.class.getPackage().getImplementationVersion());
+		if (version != null) {
+			return version;
+		}
+
+		version = readMavenPomPropertiesVersion();
+		if (version != null) {
+			return version;
+		}
+
+		version = readPomXmlVersion();
+		if (version != null) {
+			return version;
+		}
+
+		return UNKNOWN_VERSION;
+	}
+
+	private static String readMavenPomPropertiesVersion()
+	{
+		try (InputStream input = MainWindow.class.getResourceAsStream(MAVEN_POM_PROPERTIES)) {
+			if (input == null) {
+				return null;
+			}
+
+			Properties pomProperties = new Properties();
+			pomProperties.load(input);
+			return normalizeVersion(pomProperties.getProperty("version"));
+		}
+		catch (IOException e) {
+			return null;
+		}
+	}
+
+	private static String readPomXmlVersion()
+	{
+		String version = readPomXmlVersionNear(getCodeSourcePath());
+		if (version != null) {
+			return version;
+		}
+
+		return readPomXmlVersionNear(Path.of("").toAbsolutePath());
+	}
+
+	private static Path getCodeSourcePath()
+	{
+		try {
+			URL location = MainWindow.class.getProtectionDomain().getCodeSource().getLocation();
+			if (location == null || !"file".equals(location.getProtocol())) {
+				return null;
+			}
+
+			Path path = Path.of(location.toURI());
+			if (Files.isRegularFile(path)) {
+				return path.getParent();
+			}
+
+			return path;
+		}
+		catch (IllegalArgumentException | URISyntaxException e) {
+			return null;
+		}
+	}
+
+	private static String readPomXmlVersionNear(Path startPath)
+	{
+		if (startPath == null) {
+			return null;
+		}
+
+		Path path = startPath.toAbsolutePath().normalize();
+		while (path != null) {
+			Path pomPath = path.resolve("pom.xml");
+			if (Files.isRegularFile(pomPath)) {
+				String version = readPomXmlVersion(pomPath);
+				if (version != null) {
+					return version;
+				}
+			}
+
+			path = path.getParent();
+		}
+
+		return null;
+	}
+
+	private static String readPomXmlVersion(Path pomPath)
+	{
+		try (InputStream input = Files.newInputStream(pomPath)) {
+			DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+			factory.setNamespaceAware(true);
+
+			Document document = factory.newDocumentBuilder().parse(input);
+			Element projectElement = document.getDocumentElement();
+			String version = directChildText(projectElement, "version");
+			if (version == null) {
+				Element parentElement = directChildElement(projectElement, "parent");
+				if (parentElement != null) {
+					version = directChildText(parentElement, "version");
+				}
+			}
+
+			return normalizeVersion(version);
+		}
+		catch (Exception e) {
+			return null;
+		}
+	}
+
+	private static String directChildText(Element parentElement, String childName)
+	{
+		Element childElement = directChildElement(parentElement, childName);
+		if (childElement == null) {
+			return null;
+		}
+
+		return childElement.getTextContent();
+	}
+
+	private static Element directChildElement(Element parentElement, String childName)
+	{
+		for (Node child = parentElement.getFirstChild(); child != null; child = child.getNextSibling()) {
+			if (child.getNodeType() == Node.ELEMENT_NODE) {
+				Element childElement = (Element) child;
+				if (childName.equals(childElement.getLocalName()) || childName.equals(childElement.getNodeName())) {
+					return childElement;
+				}
+			}
+		}
+
+		return null;
+	}
+
+	private static String normalizeVersion(String version)
+	{
+		if (version == null) {
+			return null;
+		}
+
+		version = version.trim();
+		if (version.isEmpty()) {
+			return null;
+		}
+
+		return version;
+	}
+
 	private void onAboutClicked()
 	{
-		String version = getClass().getPackage().getImplementationVersion();
+		String version = getApplicationVersion();
 		String versionStr = MessageFormat.format(strings.getString("main.version_string"), version);
 		versionStr = versionStr.replace("%java.version%", System.getProperty("java.version"));
 		versionStr = versionStr.replace("%java.vendor%", System.getProperty("java.vendor"));
