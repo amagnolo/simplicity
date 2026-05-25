@@ -2,9 +2,10 @@
 
 == [unreleased]
 
-* fixed city loading
 * user settings for UI scaling and locale selection
 * localized currency
+* darker park areas to better differentiate from the forest
+* fixed city loading
 * docs:
 ** player guides inspired by SimCity manual
 ** website in GitHub Pages
