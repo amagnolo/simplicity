@@ -32,6 +32,8 @@ Under the simple surface, the city still has moving parts:
 
 The fun is in reading the map and making small decisions. A road here. A park there. More power before the next district grows. Lower taxes when the city needs a nudge. Nothing is shouting at you, but the city is always responding.
 
+![Screenshot with more data](images/screenshot3.png)
+
 ## A good game to share with a child
 
 SimpliCity starts with gentle settings: automatic budget handling is enabled, and disasters are turned off by default. The pace is calm and the rules are readable. There is no competitive pressure and nothing to fail at quickly.
@@ -39,6 +41,8 @@ SimpliCity starts with gentle settings: automatic budget handling is enabled, an
 That makes it a natural choice for playing together with a younger child: you can talk through what you are building, why the traffic is backing up, or what might happen if you add a park. The simulation is honest enough to spark real questions, and slow enough to give you time to answer them.
 
 If you want more challenge later, harder levels and disasters are still there to explore.
+
+![Screenshot in Italian](images/screenshot2.png)
 
 ## For players who miss slower games
 
@@ -51,6 +55,7 @@ SimpliCity is also for anyone who likes games that leave space to think:
 
 ## Learn more
 
+- See [what's new](https://github.com/amagnolo/simplicity/blob/main/docs/changelog.adoc)
 - Read the [player's guide](https://github.com/amagnolo/simplicity/blob/main/docs/simcity%20-%20player%27s%20guide.adoc) (also in [Italian](https://github.com/amagnolo/simplicity/blob/main/docs/simcity%20-%20guida%20al%20gioco.adoc))
 - Deepen your knowledge with the original game manual from [Internet Archive](https://archive.org/details/simcity-classic-manual) and [OpenRetro](https://openretro.org/amiga/sim-city/docs/user-documentation-en)
 - Visit the [project on GitHub](https://github.com/amagnolo/simplicity)
