@@ -6,6 +6,7 @@
 * localized currency
 * darker park areas to better differentiate from the forest
 * fixed city loading
+* scroll map with arrow keys (in addition to middle mouse click+drag)
 * docs:
 ** player guides inspired by SimCity manual
 ** website in GitHub Pages

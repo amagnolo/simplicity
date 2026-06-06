@@ -41,7 +41,8 @@ public class MicropolisDrawingArea extends JComponent
 	TileImages tileImages;
 	int TILE_WIDTH;
 	int TILE_HEIGHT;
-	int dragX, dragY;
+	int dragScreenX, dragScreenY;
+	int dragViewX, dragViewY;
 	boolean dragging;
 
 	public MicropolisDrawingArea(Micropolis engine)
@@ -60,45 +61,50 @@ public class MicropolisDrawingArea extends JComponent
 		public void ancestorMoved(AncestorEvent evt) {}
 		});
 		
+		setFocusable(true);
+
 		addMouseListener(new MouseListener() {
-			
+
 			@Override
 			public void mousePressed(MouseEvent e) {
+				requestFocusInWindow();
 				if(e.getButton()==MouseEvent.BUTTON2)
-					startDrag(e.getX(), e.getY());
+					startDrag(e);
 			}
-			
+
 			@Override
 			public void mouseReleased(MouseEvent e) {
 				if(e.getButton()==MouseEvent.BUTTON2)
-					endDrag(e.getX(), e.getY());
+					endDrag();
 			}
-			
+
 			@Override
 			public void mouseEntered(MouseEvent e) {
 			}
-			
+
 			@Override
 			public void mouseExited(MouseEvent e) {
 			}
-			
+
 			@Override
 			public void mouseClicked(MouseEvent e) {
 			}
 		});
-		
+
 		addMouseMotionListener(new MouseMotionListener() {
-			
+
 			@Override
 			public void mouseMoved(MouseEvent e) {
 			}
-			
+
 			@Override
 			public void mouseDragged(MouseEvent e) {
 				if(dragging)
-					continueDrag(e.getX(), e.getY());
+					continueDrag(e);
 			}
 		});
+
+		setupArrowKeyBindings();
 	}
 
 	public void selectTileSize(int newTileSize)
@@ -413,25 +419,62 @@ public class MicropolisDrawingArea extends JComponent
 		repaint();
 	}
 
-	protected void startDrag(int x, int y)
+	private JScrollPane getScrollPane()
+	{
+		return (JScrollPane) SwingUtilities.getAncestorOfClass(JScrollPane.class, this);
+	}
+
+	private void scrollBy(int dx, int dy)
+	{
+		JScrollPane js = getScrollPane();
+		if (js == null) return;
+		JScrollBar hbar = js.getHorizontalScrollBar();
+		JScrollBar vbar = js.getVerticalScrollBar();
+		hbar.setValue(hbar.getValue() + dx);
+		vbar.setValue(vbar.getValue() + dy);
+	}
+
+	private void setupArrowKeyBindings()
+	{
+		InputMap im = getInputMap(WHEN_IN_FOCUSED_WINDOW);
+		ActionMap am = getActionMap();
+		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_LEFT,  0), "scrollLeft");
+		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_RIGHT, 0), "scrollRight");
+		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_UP,    0), "scrollUp");
+		im.put(KeyStroke.getKeyStroke(KeyEvent.VK_DOWN,  0), "scrollDown");
+		am.put("scrollLeft",  new AbstractAction() { public void actionPerformed(ActionEvent e) { scrollBy(-TILE_WIDTH  * 3, 0); } });
+		am.put("scrollRight", new AbstractAction() { public void actionPerformed(ActionEvent e) { scrollBy( TILE_WIDTH  * 3, 0); } });
+		am.put("scrollUp",    new AbstractAction() { public void actionPerformed(ActionEvent e) { scrollBy(0, -TILE_HEIGHT * 3); } });
+		am.put("scrollDown",  new AbstractAction() { public void actionPerformed(ActionEvent e) { scrollBy(0,  TILE_HEIGHT * 3); } });
+	}
+
+	protected void startDrag(MouseEvent e)
 	{
 		dragging = true;
-		dragX = x;
-		dragY = y;
+		Point p = e.getLocationOnScreen();
+		dragScreenX = p.x;
+		dragScreenY = p.y;
+		JScrollPane js = getScrollPane();
+		if (js != null) {
+			dragViewX = js.getHorizontalScrollBar().getValue();
+			dragViewY = js.getVerticalScrollBar().getValue();
+		}
 	}
-	protected void endDrag(int x, int y)
+
+	protected void endDrag()
 	{
 		dragging = false;
 	}
-	protected void continueDrag(int x, int y)
+
+	protected void continueDrag(MouseEvent e)
 	{
-		int dx = x - dragX;		
-		int dy = y - dragY;
-		JScrollPane js = (JScrollPane)getParent().getParent();
-		js.getHorizontalScrollBar().setValue(
-				js.getHorizontalScrollBar().getValue()-dx);
-		js.getVerticalScrollBar().setValue(
-				js.getVerticalScrollBar().getValue()-dy);
+		Point p = e.getLocationOnScreen();
+		int dx = p.x - dragScreenX;
+		int dy = p.y - dragScreenY;
+		JScrollPane js = getScrollPane();
+		if (js == null) return;
+		js.getHorizontalScrollBar().setValue(dragViewX - dx);
+		js.getVerticalScrollBar().setValue(dragViewY - dy);
 	}
 	
 	void doBlink()
