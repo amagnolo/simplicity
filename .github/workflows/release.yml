@@ -1,0 +1,192 @@
+name: Release
+
+# Fires when you push a version tag, e.g.:
+#   git tag v1.0.0 && git push origin v1.0.0
+#
+# NOTE on tag/version format: the leading "v" is stripped, then the result is
+# passed to jpackage as --app-version. On Windows (MSI) and macOS jpackage is
+# strict about this:
+#   * components must be purely NUMERIC  -> v1.2.0-rc1 / v1.0.0-beta will FAIL
+#   * the MAJOR component must be > 0     -> v0.1.0 will FAIL
+# Use plain numeric tags like v1.0.0 or v2.3.1. (Linux .deb is more lenient.)
+on:
+  push:
+    tags:
+      - 'v*'
+
+permissions:
+  contents: write   # required to upload assets to the GitHub Release
+
+env:
+  JAVA_VERSION: '25'
+  APP_NAME: SimpliCity
+  MAIN_CLASS: micropolisj.Main
+
+jobs:
+  # ---------------------------------------------------------------------------
+  # Build the (platform-independent) jar once, attach it to the release, and
+  # hand it to the packaging jobs as a workflow artifact so we don't rebuild 3x.
+  # ---------------------------------------------------------------------------
+  build-jar:
+    name: Build jar
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: maven
+
+      - name: Build with Maven
+        run: mvn -B -ntp package
+
+      - name: Resolve version from tag
+        id: ver
+        run: echo "version=${GITHUB_REF_NAME#v}" >> "$GITHUB_OUTPUT"
+
+      - name: Stage jar for packaging jobs
+        run: |
+          mkdir -p staged
+          cp target/${APP_NAME}-*.jar staged/
+
+      # Artifact consumed by the package job (keeps the original pom jar name).
+      - name: Upload jar artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: app-jar
+          path: staged/*.jar
+          retention-days: 1
+
+      # Attach the plain jar to the release, renamed to match the tag version.
+      - name: Attach plain jar to release
+        run: |
+          src=$(ls target/${APP_NAME}-*.jar | head -n1)
+          cp "$src" "${APP_NAME}-${{ steps.ver.outputs.version }}.jar"
+      - uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ env.APP_NAME }}-${{ steps.ver.outputs.version }}.jar
+          fail_on_unmatched_files: true
+
+  # ---------------------------------------------------------------------------
+  # Build a native installer on each OS and attach it to the release.
+  # jpackage cannot cross-compile, so each format is built on its own runner.
+  # ---------------------------------------------------------------------------
+  package:
+    name: Installer (${{ matrix.os }})
+    needs: build-jar
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            pkg_type: deb
+            icon: packaging/icons/SimpliCity.png
+            extra_args: --linux-shortcut
+            arch_suffix: ""        # .deb already carries _amd64
+            asset_glob: dist/*.deb
+          - os: ubuntu-latest
+            pkg_type: rpm
+            icon: packaging/icons/SimpliCity.png
+            extra_args: --linux-shortcut
+            arch_suffix: ""        # .rpm already carries .x86_64
+            asset_glob: dist/*.rpm
+          - os: windows-latest
+            pkg_type: msi
+            icon: packaging/icons/SimpliCity.ico
+            extra_args: --win-shortcut --win-menu --win-dir-chooser
+            arch_suffix: ""
+            asset_glob: dist/*.msi
+          - os: windows-latest       # portable: self-contained SimpliCity.exe, zipped
+            pkg_type: app-image
+            icon: packaging/icons/SimpliCity.ico
+            extra_args: ""
+            arch_suffix: ""
+            asset_glob: dist/*.zip
+          - os: macos-latest       # Apple Silicon (ARM64) runner
+            pkg_type: dmg
+            icon: packaging/icons/SimpliCity.icns
+            extra_args: ""
+            arch_suffix: "-arm64"
+            asset_glob: dist/*.dmg
+          - os: macos-13           # Intel (x86_64) runner
+            pkg_type: dmg
+            icon: packaging/icons/SimpliCity.icns
+            extra_args: ""
+            arch_suffix: "-x64"
+            asset_glob: dist/*.dmg
+    steps:
+      - uses: actions/checkout@v4   # needed for the icon files
+
+      - name: Set up JDK ${{ env.JAVA_VERSION }}
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: ${{ env.JAVA_VERSION }}
+
+      - name: Download jar artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: app-jar
+          path: staged
+
+      # Linux: .deb needs fakeroot (dpkg-deb is preinstalled); .rpm needs rpmbuild
+      # (from the 'rpm' package, which is not installed on ubuntu by default).
+      - name: Install Linux packaging tooling
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y fakeroot rpm
+
+      # Windows: jpackage only works with WiX 3 (v4/v5/v6 are NOT supported and
+      # make jpackage fail), and the runner no longer ships it, so install 3.14.
+      # Only installer types (msi/exe) need WiX; the portable app-image does not.
+      - name: Install WiX 3.14 (Windows)
+        if: runner.os == 'Windows' && matrix.pkg_type != 'app-image'
+        shell: pwsh
+        run: |
+          curl -L -o wix.zip https://github.com/wixtoolset/wix3/releases/download/wix3141rtm/wix314-binaries.zip
+          Expand-Archive wix.zip -DestinationPath "$env:RUNNER_TEMP\wix"
+          "$env:RUNNER_TEMP\wix" | Out-File -FilePath $env:GITHUB_PATH -Append -Encoding utf8
+
+      - name: Build installer with jpackage
+        shell: bash
+        run: |
+          set -euo pipefail
+          VERSION="${GITHUB_REF_NAME#v}"
+          MAIN_JAR="$(basename "$(ls staged/${APP_NAME}-*.jar | head -n1)")"
+          jpackage \
+            --type "${{ matrix.pkg_type }}" \
+            --name "${APP_NAME}" \
+            --app-version "${VERSION}" \
+            --input staged \
+            --main-jar "${MAIN_JAR}" \
+            --main-class "${MAIN_CLASS}" \
+            --icon "${{ matrix.icon }}" \
+            --dest dist \
+            --vendor "SimpliCity" \
+            --copyright "GPLv3" \
+            --description "SimpliCity - a SimCity-style city building game" \
+            ${{ matrix.extra_args }}
+          # Portable build: jpackage app-image is a folder (SimpliCity.exe +
+          # bundled runtime). Zip it for distribution and drop the raw folder
+          # so the asset glob matches only the .zip.
+          if [ "${{ matrix.pkg_type }}" = "app-image" ]; then
+            ( cd dist && 7z a -tzip "${APP_NAME}-${VERSION}-windows-portable.zip" "${APP_NAME}" >/dev/null )
+            rm -rf "dist/${APP_NAME}"
+          fi
+          # Disambiguate same-named outputs (the two macOS dmgs) by arch.
+          suffix="${{ matrix.arch_suffix }}"
+          if [ -n "$suffix" ]; then
+            for f in dist/*; do
+              mv "$f" "${f%.*}${suffix}.${f##*.}"
+            done
+          fi
+          ls -la dist
+
+      - name: Attach installer to release
+        uses: softprops/action-gh-release@v2
+        with:
+          files: ${{ matrix.asset_glob }}
+          fail_on_unmatched_files: true
