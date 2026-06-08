@@ -24,7 +24,7 @@ Every installer and the portable build come with their own bundled Java runtime,
 
 ---
 
-## Universal `.jar` (advanced)
+## Universal jar (advanced)
 
 If you already have **Java 25** (or newer) installed, the small platform-independent jar runs quickly everywhere:
 

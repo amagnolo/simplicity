@@ -19,12 +19,12 @@ However, they are designed to keep you engaged: missions to complete, objectives
 *SimpliCity goes the other way*. There are no missions, no season pass, no store, and no artificial urgency. It runs offline, without accounts, online services, notifications, or anything trying to pull you back in. The map does not flash at you. The game does not tell you what to build next. You play because you want to shape a city and enjoy the quiet rhythm of the simulation.
 
 <p style="text-align: center;">
-	<a href="installation.md" title="Download &amp; install SimpliCity">
+	<a href="installation" title="Download &amp; install SimpliCity">
 	 <img src="images/logo_universal_transparent.png" alt="Download SimpliCity" style="width: 240px; max-width: 100%; height: auto;">
 	<br>
 	<img src="https://img.shields.io/badge/Download-Linux%20%C2%B7%20Windows%20%C2%B7%20macOS%20%C2%B7%20Java-159957?style=for-the-badge&amp;logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyNCAyNCI+PHBhdGggZmlsbD0iI2ZmZiIgZD0iTTE5IDloLTRWM0g5djZINWw3IDcgNy03ek01IDE4djJoMTR2LTJINXoiLz48L3N2Zz4=" alt="Download SimpliCity">
 	<br>
-	<sub>Free · no account · no ads · no tracking</sub>
+	<sub>Free download · no account · no ads · no tracking</sub>
 	</a>
 </p>
 
