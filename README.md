@@ -52,13 +52,13 @@ mvn package
 The build produces:
 
 ```text
-target/SimpliCity-0.1.jar
+target/SimpliCity-x.x.x.jar
 ```
 
 ## Run
 
 ```bash
-java -jar target/SimpliCity-0.1.jar
+java -jar target/SimpliCity-x.x.x.jar
 ```
 
 The application is a desktop Java/Swing program.
@@ -82,4 +82,4 @@ This project is free software under the GNU General Public License version 3 or 
 
 The original MicropolisJ README, preserved at [docs/legacy/MicropolisJ-README.txt](docs/legacy/MicropolisJ-README.txt), contains the original copyright notice and additional GPL section 7 terms, including the Electronic Arts trademark notice. SimpliCity is not affiliated with Electronic Arts, and this project does not grant any right to use the SimCity trademark or any other Electronic Arts trademark.
 
-![Screenshot with more data](docs/images/logo_universal_transparent.png)
+![SimplyCity logo](docs/images/logo_universal_transparent.png)

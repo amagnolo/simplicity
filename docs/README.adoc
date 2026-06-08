@@ -2,3 +2,5 @@
 
 Read this on the https://amagnolo.github.io/simplicity/[website].
 
+image::images/logo_universal_transparent.png[SimplyCity logo,link=https://amagnolo.github.io/simplicity/]
+
