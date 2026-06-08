@@ -61,3 +61,5 @@ SimpliCity is also for anyone who likes games that leave space to think:
 - Visit the [project on GitHub](https://github.com/amagnolo/simplicity)
 
 *SimpliCity is a hobby project and not affiliated with Electronic Arts, Maxis, or the SimCity trademark.*
+
+![Screenshot with more data](images/logo_universal_transparent.png)

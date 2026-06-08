@@ -1,6 +1,6 @@
 # SimpliCity
 
-_SimpliCity_ is a city simulation game rooted in the original SimCity, with small improvements and a focus on simplicity. It is an open source fork of MicropolisJ, the Java/Swing port of Micropolis.
+[_SimpliCity_](https://amagnolo.github.io/simplicity/) is a city simulation game rooted in the original SimCity, with small improvements and a focus on simplicity. It is an open source fork of [MicropolisJ](https://github.com/jason17055/micropolis-java), the Java/Swing port of [Micropolis](https://donhopkins.medium.com/open-sourcing-simcity-58470a275446), which in turn is the open source version of [SimCity](https://en.wikipedia.org/wiki/SimCity_(1989_video_game)#Micropolis).
 
 ![SimpliCity game screenshot](docs/images/screenshot.png)
 
@@ -81,3 +81,5 @@ MicropolisJ is based on Micropolis, the Unix version developed by Don Hopkins fo
 This project is free software under the GNU General Public License version 3 or later. See [COPYING](COPYING) for the GPLv3 text.
 
 The original MicropolisJ README, preserved at [docs/legacy/MicropolisJ-README.txt](docs/legacy/MicropolisJ-README.txt), contains the original copyright notice and additional GPL section 7 terms, including the Electronic Arts trademark notice. SimpliCity is not affiliated with Electronic Arts, and this project does not grant any right to use the SimCity trademark or any other Electronic Arts trademark.
+
+![Screenshot with more data](docs/images/logo_universal_transparent.png)

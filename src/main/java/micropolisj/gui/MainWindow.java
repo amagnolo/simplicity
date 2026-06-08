@@ -10,6 +10,9 @@ package micropolisj.gui;
 
 import micropolisj.engine.*;
 import micropolisj.util.TranslationTool;
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 
 import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
@@ -19,11 +22,7 @@ import javax.swing.filechooser.FileNameExtensionFilter;
 import javax.xml.parsers.DocumentBuilderFactory;
 import java.awt.*;
 import java.awt.event.*;
-import java.io.File;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.StringWriter;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Files;
@@ -32,9 +31,6 @@ import java.text.MessageFormat;
 import java.text.NumberFormat;
 import java.util.*;
 import java.util.prefs.Preferences;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.Node;
 
 public class MainWindow extends JFrame
 	implements Micropolis.Listener, EarthquakeListener
@@ -66,7 +62,7 @@ public class MainWindow extends JFrame
 
 	static ImageIcon appIcon;
 	static {
-		appIcon = new ImageIcon(MainWindow.class.getResource("/micropolism.png"));
+		appIcon = new ImageIcon(MainWindow.class.getResource("/simplicity_logo_small.png"));
 	}
 
 	static ResourceBundle strings = ResourceBundle.getBundle("i18n.GuiStrings");
