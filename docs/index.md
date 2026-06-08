@@ -66,7 +66,7 @@ SimpliCity is also for anyone who likes games that leave space to think:
 - See [what's new](https://github.com/amagnolo/simplicity/blob/main/docs/changelog.adoc)
 - Read the [player's guide](https://github.com/amagnolo/simplicity/blob/main/docs/simcity%20-%20player%27s%20guide.adoc) (also in [Italian](https://github.com/amagnolo/simplicity/blob/main/docs/simcity%20-%20guida%20al%20gioco.adoc))
 - Deepen your knowledge with the original game manual from [Internet Archive](https://archive.org/details/simcity-classic-manual) and [OpenRetro](https://openretro.org/amiga/sim-city/docs/user-documentation-en)
-- Visit the [project on GitHub](https://github.com/amagnolo/simplicity)
+- Visit the [project on GitHub](https://github.com/amagnolo/simplicity) for technical details and source code
 
 *SimpliCity is a hobby project and not affiliated with Electronic Arts, Maxis, or the SimCity trademark.*
 
