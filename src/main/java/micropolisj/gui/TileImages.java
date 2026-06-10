@@ -127,21 +127,26 @@ public class TileImages
 		}
 	}
 
-	static Map<Integer,TileImages> savedInstances = new HashMap<Integer,TileImages>();
+	static Map<String,TileImages> savedInstances = new HashMap<String,TileImages>();
 
+	/**
+	 * Returns the map tile images for the given tile size, honoring the
+	 * currently selected graphics skin (modern or classic).
+	 */
 	public static TileImages getInstance(int size)
 	{
-		TileImages self = getInstance(String.format("%dx%d", size, size), size);
+		String prefix = TileSkin.resourcePrefix(TileSkin.getPreference());
+		TileImages self = getInstance(String.format("%s%dx%d", prefix, size, size), size);
 		self.loadSpriteImages();
 		return self;
 	}
 
 	public static TileImages getInstance(String name, int size)
 	{
-		if (!savedInstances.containsKey(size)) {
-			savedInstances.put(size, new TileImages(name, size));
+		if (!savedInstances.containsKey(name)) {
+			savedInstances.put(name, new TileImages(name, size));
 		}
-		return savedInstances.get(size);
+		return savedInstances.get(name);
 	}
 
 	public class ImageInfo
@@ -160,6 +165,14 @@ public class TileImages
 		{
 			gr.drawImage(getImage(),
 				destX, destY,
+				null);
+		}
+
+		public void drawTo(Graphics gr, int destX, int destY, int destWidth, int destHeight)
+		{
+			gr.drawImage(getImage(),
+				destX, destY,
+				destWidth, destHeight,
 				null);
 		}
 

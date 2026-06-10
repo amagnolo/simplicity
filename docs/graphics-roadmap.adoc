@@ -1,0 +1,230 @@
+= Graphics Roadmap
+:toc:
+
+Modernization of the SimpliCity graphics: motivation, how the pipeline
+works, what has been done, and what is still TODO.
+
+== Motivation
+
+The original MicropolisJ art dates back to 1980s hardware limits: a
+~14-color palette with heavy single-pixel dithering, drawn at 16px per
+tile. On modern hi-res displays the game was only usable at UI scale
+200-300% (`Options > UI Scale`, which sets `sun.java2d.uiScale`), and
+that scaling blew the 16px bitmaps up into visible blocks.
+
+Two complementary fixes were made (June 2026):
+
+* *Bigger, crisper map graphics.* A 64x64 zoom level was added (zoom
+  range is now 8-64), and the map painter is HiDPI-aware: it picks the
+  tile sheet at the smallest available size covering
+  `zoom x device scale`, so at UI scale 2-3x the map is rendered from
+  genuinely higher-resolution art instead of upscaled bitmaps.
+* *Modern full-color art.* Land, water, forest, parks, rubble, flood,
+  radiation, scorch and fire tiles, plus roads, rails, power wires,
+  bridges and traffic, are now procedurally drawn in full color without
+  dithering. Building and zone sheets are run through a de-dithering
+  filter that blends the dense two-color checkerboards into smooth
+  shades (window grids and other sparse pixel detail stay crisp), then
+  upscaled with Scale2x/Scale4x for the 32px and 64px sheets until they
+  get real redrawn art (see TODO).
+
+The original art remains available in-game via *Options > Graphics >
+Classic* (preference `tile_skin`, see `TileSkin`); the switch applies
+live, no restart needed. Classic sheets live under
+`src/main/resources/classic/{8x8,16x16,32x32,64x64}/` and are composed
+from the base 16px sources only (no `_NxN` variants), reproducing the
+pre-modernization look — including the manually darkened park tiles,
+which were ported from the old composed sheets back into
+`graphics/terrain.png` / `graphics/misc_animation.png`.
+
+== Pipeline
+
+Source art lives in `graphics/`; the game loads pre-composed sheets
+from `src/main/resources/{8x8,16x16,32x32,64x64,sm}/tiles.png(+.idx)`.
+The sheets are static checked-in resources; regenerate them with:
+
+----
+graphics/build-tiles.sh
+----
+
+The script:
+
+1. runs `micropolisj.build_tool.DeDither` on the building/zone sheets
+   (zones, civic buildings, their animation frames), producing cleaned
+   `name_16x16.png` variants;
+2. derives `name_32x32.png` / `name_64x64.png` source sheets from the
+   16px art via `micropolisj.build_tool.UpscaleArt` (Scale2x/EPX) —
+   preferring the de-dithered `_16x16` when one exists — and
+   `name_8x8.png` via `micropolisj.build_tool.HalveArt` (box filter);
+3. runs `micropolisj.build_tool.GenerateTerrainArt`, which overwrites
+   the terrain and fountain sheets with procedural art
+   (`terrain_{8x8,16x16,32x32,64x64}.png`,
+   `misc_animation_{8x8,16x16,32x32,64x64}.png`);
+4. runs `micropolisj.build_tool.GenerateOverlayArt`, which draws the
+   road, rail, wire, rail+road and traffic sheets
+   (`{roads,rails,wires,roadwire,traffic_frames}_{8x8,16x16,32x32,64x64}.png`);
+5. runs `micropolisj.build_tool.MakeTiles` for tile sizes 3 (minimap),
+   8, 16, 32 and 64, plus a second "classic" pass that stages only the
+   base 16px sources into a temp dir and composes
+   `src/main/resources/classic/{N}x{N}`;
+6. keeps `src/main/resources/tiles.rc` in sync with `graphics/tiles.rc`;
+7. derives `obj*_32x32.png` / `obj*_64x64.png` sprite variants.
+
+The derived `graphics/*_NxN.png` intermediates are gitignored; only the
+composed sheets in `src/main/resources/` are committed.
+
+MakeTiles resolves source art per size: `name_NxN.svg`, `name.svg`
+(rendered with Inkscape), `name_NxN.png`, `name_128x128.png`, then
+`name.png` (16px basis, scaled). Dropping a higher-resolution source
+next to the 16px original is enough — no build-tool changes needed.
+
+=== Procedural terrain art
+
+`GenerateTerrainArt` redraws tiles 0-1 (dirt), 2-20 (water and river
+edges), 21-37 (trees/forest edges), 40-43 (park woods), 44-47 (rubble),
+48-51 (flood), 52 (radiation), 53-55 (scorched ground) and 56-63
+(fire animation), plus the four fountain animation frames (tile 840)
+inside `misc_animation`.
+
+The original 16px tiles are used as *material masks*: each pixel is
+classified as water / tree / land by palette color, the masks are
+upsampled and smoothed, and procedural textures are rendered through
+them (noise-mottled dirt, water with depth and wobbled shorelines,
+individually lit tree crowns). This reproduces every shoreline and
+forest-edge orientation of the original tile set automatically.
+Park tiles (40-43), rubble, flood, radiation, scorch and fire are
+drawn from scratch. Average land/water tones stay close to the
+original palette so the redrawn terrain doesn't clash at seams with
+the still-upscaled building tiles.
+
+=== Procedural road/rail/wire art
+
+`GenerateOverlayArt` redraws the transport and power overlays:
+
+* *Roads* (`roads.png`): drawn geometrically from per-row path layouts
+  (straights, quarter arcs for curves, T- and X-junctions) — asphalt
+  band with a dark outline and dashed center line; the bridge rows
+  (incl. the open drawbridge) are geometric too. The same surface is
+  used for the road part of the rail crossings.
+* *Rails* (`rails.png`): drawn geometrically from per-row track layouts
+  (straights, curves, T- and X-junctions, rail+road crossings) —
+  gravel ballast, wooden ties, twin steel rails. Underwater rows are a
+  dashed "tunnel" ghost so they stay visible on the new water.
+* *Wires* (`wires.png`, `roadwire.png`): poles with caps and the twin
+  hanging cables of the original art; the rail+wire crossings draw the
+  same twin cables geometrically at matching positions. Underwater rows
+  are a dashed submarine-cable band.
+* *Traffic* (`traffic_frames.png`): the redrawn road is the base layer
+  (traffic tiles are layered composites in `tiles.rc`); the car
+  animation is synthesized along geometric lanes offset from the road
+  centerline (so curve lanes meet straight lanes exactly at tile
+  seams). Cars advance a quarter lane-length per frame, making the
+  4-frame loop seamless; colors are keyed to the car's identity, not
+  its position, so they stay stable across frames, and drawing is
+  clipped per cell so cars can't bleed into neighboring frames.
+
+=== De-dithered buildings
+
+`DeDither` removes the dense two-color dithering the 80s art uses to
+fake intermediate shades: a pixel is an _alternation candidate_ when
+at least 3 of its 4 neighbours differ and agree on one partner color;
+where candidates are dense (a true checkerboard, not a sparse window
+grid) every pixel is replaced by its local 3x3 average. Applied to:
+airport, coal, com_zones, firestation, ind_zones, misc_animation,
+nuclear, police, res_houses, res_zones, seaport, stadium sheets and
+their animation-frame sheets.
+
+== Deluxe skin (planned)
+
+A third skin, *Deluxe*, will join Classic and Modern: every tile
+completely redrawn as full-color art, replacing the de-dithered
+Scale2x/Scale4x upscales that Modern still uses for buildings and
+zones. Implementation steps:
+
+1. *`TileSkin`*: add a third constant `DELUXE = "deluxe"` next to
+   `MODERN`/`CLASSIC`; `resourcePrefix` returns `"deluxe/"` for it.
+   Modern stays the default (empty prefix), so existing preferences
+   keep working.
+2. *`MainWindow`*: a third radio item in Options > Graphics, wired
+   through the existing `graphicsMenuItems` /
+   `onGraphicsSkinClicked` machinery — the live-switch path
+   (`TileSkin.setPreference` + `refreshTileImages`) needs no changes.
+3. *i18n*: add `menu.options.graphics.deluxe` to all five
+   `GuiStrings*.properties` bundles (en/de/fr/it/sv); "Deluxe" works
+   untranslated in every locale.
+4. *Source art*: a dedicated `graphics/deluxe/` directory holding the
+   redrawn sheets at 64px basis (`name_64x64.png`, same sheet layout
+   and row order as the base art so `tiles.rc` and the `.ani` files
+   work unchanged). Sheets not yet redrawn simply aren't present —
+   they fall back to the modern art, so the skin stays usable while
+   the redraw is incomplete.
+5. *`build-tiles.sh`*: a third MakeTiles pass that stages the modern
+   sources (base art + generated/derived `_NxN` files) into a temp
+   dir — the same staging trick the classic pass uses — then copies
+   the `graphics/deluxe/` overrides on top, and composes
+   `src/main/resources/deluxe/{8x8,16x16,32x32,64x64}/`. The minimap
+   (`sm/`) stays shared across skins.
+6. *The art itself*: the redraw workload in the TODO list below.
+
+== Prior manual art work (do not regress)
+
+* Commit `772212c` — the 16 toolbar icons (`src/main/resources/ic*.png`)
+  were manually de-dithered. They are standalone resources, untouched by
+  the regen script; future icon work must not revert them.
+* Commit `1096377` — park tiles were manually darkened to distinguish
+  parks from forest. Those pixels were originally edited directly in the
+  composed sheets; they have since been ported back into the source art
+  (`graphics/terrain.png` rows 40-43, `graphics/misc_animation.png`
+  fountain frames), so the classic skin reproduces them. In the modern
+  skin the parks are procedural, and the *intent* is preserved as a
+  design rule: *park trees must stay clearly darker and visually
+  distinct from forest trees at every tile size*.
+
+== TODO — future graphics improvements
+
+Done so far:
+
+* [x] Roads, rails, power wires, bridges and traffic — procedurally
+      redrawn (`GenerateOverlayArt`).
+* [x] Terrain leftovers in `terrain.png`: rubble (44-47), flood (48-51),
+      radiation (52), scorch (53-55), fire (56-63)
+      (`GenerateTerrainArt`).
+* [x] Buildings and zones de-dithered (`DeDither`) — smooth shades at
+      every zoom, but still pixel-art upscales, see below.
+
+Remaining — the *Deluxe* skin art workload (see the plan above):
+redraw with true full-color art what is currently a de-dithered
+Scale2x/Scale4x upscale of the originals. Roughly in order of
+on-screen prominence:
+
+* [ ] Residential zones and houses (`res_zones.png`, `res_houses.png`).
+* [ ] Commercial zones (`com_zones.png`).
+* [ ] Industrial zones and their smoke/piston animations
+      (`ind_zones.png`, `ind0*_frames.png`).
+* [ ] Civic buildings: fire station, police, stadium, seaport, airport,
+      coal and nuclear plants (incl. smoke/radar/swirl animations).
+* [ ] Remaining `misc_animation.png` tiles (churches, hospital, ...).
+* [ ] Sprites `obj*.png` (train, helicopter, airplane, ship, monster,
+      tornado, explosion, bus) — real hi-res art instead of Scale4x.
+      Note: `build-tiles.sh` currently always regenerates
+      `obj*_{32x32,64x64}.png`; hand-made sprite art requires removing
+      that derive step for the affected files.
+* [ ] Report/graph icons (`gr*.png`, e.g. `grpoll.png`) and building
+      preview images (`airport.png`, `coal.png`, ... at resources root).
+* [ ] Minimap tiles (`graphics/*_3x3.png` -> `sm/` sheet) — flat color
+      swatches, could use a gentle refresh to match the new palette.
+
+Notes for whoever picks these up:
+
+* Provide redrawn art as `graphics/deluxe/name_64x64.png` (64px basis
+  per tile) and commit it; smaller sizes can be derived by downscaling,
+  like `GenerateTerrainArt` does. (Hand-made improvements to the
+  *modern* skin instead go next to the base art as
+  `graphics/name_NxN.png`: `build-tiles.sh` skips deriving any `_NxN`
+  file that is tracked by git, so committed hand-made art is never
+  overwritten — procedural art doesn't need committing, its generator
+  runs after the derive step and overwrites the derived files.)
+* Keep tile color averages close to the original palette where redrawn
+  tiles meet still-upscaled neighbours.
+* Animations: frame coordinates in `.ani` files are in 16px-basis
+  units; `_NxN` sources are picked up automatically.

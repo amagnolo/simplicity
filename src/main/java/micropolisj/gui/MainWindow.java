@@ -606,6 +606,27 @@ public class MainWindow extends JFrame
 		}
 		optionsMenu.add(uiScaleMenu);
 
+		JMenu graphicsMenu = new JMenu(strings.getString("menu.options.graphics"));
+		setupKeys(graphicsMenu, "menu.options.graphics");
+		ButtonGroup graphicsGroup = new ButtonGroup();
+		graphicsMenuItems = new HashMap<String,JMenuItem>();
+		for (String skin : TileSkin.getSupportedValues())
+		{
+			final String skin1 = skin;
+			menuItem = new JRadioButtonMenuItem(strings.getString("menu.options.graphics."+skin));
+			menuItem.addActionListener(wrapActionListener(
+				new ActionListener() {
+				public void actionPerformed(ActionEvent ev)
+				{
+					onGraphicsSkinClicked(skin1);
+				}
+				}));
+			graphicsGroup.add(menuItem);
+			graphicsMenu.add(menuItem);
+			graphicsMenuItems.put(skin, menuItem);
+		}
+		optionsMenu.add(graphicsMenu);
+
 		JMenu localeMenu = new JMenu(strings.getString("menu.options.locale"));
 		setupKeys(localeMenu, "menu.options.locale");
 		ButtonGroup localeGroup = new ButtonGroup();
@@ -858,6 +879,7 @@ public class MainWindow extends JFrame
 	Map<Speed,JMenuItem> priorityMenuItems;
 	Map<Integer,JMenuItem> difficultyMenuItems;
 	Map<String,JMenuItem> uiScaleMenuItems;
+	Map<String,JMenuItem> graphicsMenuItems;
 	Map<String,JMenuItem> localeMenuItems;
 
 	private void onAutoBudgetClicked()
@@ -904,6 +926,17 @@ public class MainWindow extends JFrame
 			PRODUCT_NAME,
 			JOptionPane.INFORMATION_MESSAGE
 			);
+	}
+
+	private void onGraphicsSkinClicked(String skin)
+	{
+		if (TileSkin.getPreference().equals(skin)) {
+			return;
+		}
+
+		TileSkin.setPreference(skin);
+		reloadOptions();
+		drawingArea.refreshTileImages();
 	}
 
 	private String formatUiScale(String scale)
@@ -1233,7 +1266,7 @@ public class MainWindow extends JFrame
 		int oldZoom = drawingArea.getTileSize();
 		int newZoom = dir < 0 ? (oldZoom / 2) : (oldZoom * 2);
 		if (newZoom < 8) { newZoom = 8; }
-		if (newZoom > 32) { newZoom = 32; }
+		if (newZoom > 64) { newZoom = 64; }
 
 		if (oldZoom != newZoom)
 		{
@@ -1702,6 +1735,7 @@ public class MainWindow extends JFrame
 		disastersMenuItem.setSelected(!getEngine().noDisasters);
 		soundsMenuItem.setSelected(doSounds);
 		uiScaleMenuItems.get(UiScale.getPreference()).setSelected(true);
+		graphicsMenuItems.get(TileSkin.getPreference()).setSelected(true);
 		localeMenuItems.get(AppLocale.getPreference()).setSelected(true);
 		for (Speed spd : priorityMenuItems.keySet())
 		{

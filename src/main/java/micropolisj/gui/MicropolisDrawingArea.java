@@ -38,7 +38,14 @@ public class MicropolisDrawingArea extends JComponent
 	static final ResourceBundle strings = MainWindow.strings;
 
 	static final int DEFAULT_TILE_SIZE = 16;
-	TileImages tileImages;
+	static final int [] AVAILABLE_TILE_SIZES = { 8, 16, 32, 64 };
+
+	/**
+	 * Images used for painting, chosen at the smallest available tile size
+	 * that covers TILE_WIDTH multiplied by the display's device scale, so
+	 * that tiles stay crisp on HiDPI displays (e.g. ui_scale 2 or 3).
+	 */
+	TileImages renderTileImages;
 	int TILE_WIDTH;
 	int TILE_HEIGHT;
 	int dragScreenX, dragScreenY;
@@ -109,10 +116,39 @@ public class MicropolisDrawingArea extends JComponent
 
 	public void selectTileSize(int newTileSize)
 	{
-		tileImages = TileImages.getInstance(newTileSize);
-		TILE_WIDTH = tileImages.TILE_WIDTH;
-		TILE_HEIGHT = tileImages.TILE_HEIGHT;
+		TILE_WIDTH = newTileSize;
+		TILE_HEIGHT = newTileSize;
+		updateRenderTileImages();
 		revalidate();
+	}
+
+	private double getDeviceScale()
+	{
+		GraphicsConfiguration gc = getGraphicsConfiguration();
+		return gc != null ? gc.getDefaultTransform().getScaleX() : 1.0;
+	}
+
+	/** Reloads the tile images, e.g. after the graphics skin changed. */
+	public void refreshTileImages()
+	{
+		renderTileImages = null;
+		updateRenderTileImages();
+		repaint();
+	}
+
+	private void updateRenderTileImages()
+	{
+		int target = (int) Math.round(TILE_WIDTH * getDeviceScale());
+		int size = AVAILABLE_TILE_SIZES[AVAILABLE_TILE_SIZES.length-1];
+		for (int s : AVAILABLE_TILE_SIZES) {
+			if (s >= target) {
+				size = s;
+				break;
+			}
+		}
+		if (renderTileImages == null || renderTileImages.TILE_WIDTH != size) {
+			renderTileImages = TileImages.getInstance(size);
+		}
 	}
 
 	public int getTileSize()
@@ -159,9 +195,11 @@ public class MicropolisDrawingArea extends JComponent
 			(sprite.y + sprite.offy) * TILE_HEIGHT / 16
 			);
 
-		Image img = tileImages.getSpriteImage(sprite.kind, sprite.frame-1);
+		Image img = renderTileImages.getSpriteImage(sprite.kind, sprite.frame-1);
 		if (img != null) {
-			gr.drawImage(img, p.x, p.y, null);
+			int destWidth = img.getWidth(null) * TILE_WIDTH / renderTileImages.TILE_WIDTH;
+			int destHeight = img.getHeight(null) * TILE_HEIGHT / renderTileImages.TILE_HEIGHT;
+			gr.drawImage(img, p.x, p.y, destWidth, destHeight, null);
 		}
 		else {
 			gr.setColor(Color.RED);
@@ -173,6 +211,17 @@ public class MicropolisDrawingArea extends JComponent
 
 	public void paintComponent(Graphics gr)
 	{
+		// the window may have moved to a screen with a different scale
+		updateRenderTileImages();
+
+		double deviceScale = getDeviceScale();
+		boolean exactFit = deviceScale == Math.floor(deviceScale) &&
+			renderTileImages.TILE_WIDTH == (int) Math.round(TILE_WIDTH * deviceScale);
+		((Graphics2D) gr).setRenderingHint(
+			RenderingHints.KEY_INTERPOLATION,
+			exactFit ? RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR
+				: RenderingHints.VALUE_INTERPOLATION_BILINEAR);
+
 		final int width = m.getWidth();
 		final int height = m.getHeight();
 
@@ -203,10 +252,12 @@ public class MicropolisDrawingArea extends JComponent
 					}
 				}
 
-				TileImages.ImageInfo imgInfo = tileImages.getTileImageInfo(cell, m.getAnimationCycle());
+				TileImages.ImageInfo imgInfo = renderTileImages.getTileImageInfo(cell, m.getAnimationCycle());
 				imgInfo.drawTo(gr,
 					x*TILE_WIDTH + (shakeStep != 0 ? getShakeModifier(y) : 0),
-					y*TILE_HEIGHT
+					y*TILE_HEIGHT,
+					TILE_WIDTH,
+					TILE_HEIGHT
 					);
 
 				if (imgInfo.isAnimated()) {
