@@ -3,7 +3,7 @@
 == [unreleased]
 
 * support for HiDPI graphics
-* new graphics theme: Modern
+* new graphics themes: Modern and Deluxe
 
 == 1.0.0 (2026-06-08)
 

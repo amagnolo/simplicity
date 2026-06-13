@@ -29,8 +29,8 @@ Two complementary fixes were made (June 2026):
   get real redrawn art (see TODO).
 
 The original art remains available in-game via *Options > Graphics >
-Classic* (preference `tile_skin`, see `TileSkin`); the switch applies
-live, no restart needed. Classic sheets live under
+Classic* (preference `tile_skin`, see `TileSkin`) and is the default
+skin; the switch applies live, no restart needed. Classic sheets live under
 `src/main/resources/classic/{8x8,16x16,32x32,64x64}/` and are composed
 from the base 16px sources only (no `_NxN` variants), reproducing the
 pre-modernization look — including the manually darkened park tiles,
@@ -63,12 +63,26 @@ The script:
 4. runs `micropolisj.build_tool.GenerateOverlayArt`, which draws the
    road, rail, wire, rail+road and traffic sheets
    (`{roads,rails,wires,roadwire,traffic_frames}_{8x8,16x16,32x32,64x64}.png`);
-5. runs `micropolisj.build_tool.MakeTiles` for tile sizes 3 (minimap),
+5. runs `micropolisj.build_tool.GenerateDeluxeArt`, which produces the
+   deluxe skin's building sheets
+   (`graphics/deluxe/gen/*_{64x64,32x32}.png`, gitignored);
+6. runs `micropolisj.build_tool.MakeTiles` for tile sizes 3 (minimap),
    8, 16, 32 and 64, plus a second "classic" pass that stages only the
    base 16px sources into a temp dir and composes
-   `src/main/resources/classic/{N}x{N}`;
-6. keeps `src/main/resources/tiles.rc` in sync with `graphics/tiles.rc`;
-7. derives `obj*_32x32.png` / `obj*_64x64.png` sprite variants.
+   `src/main/resources/classic/{N}x{N}`, and a third "deluxe" pass that
+   stages the modern sources, overlays the generated
+   `graphics/deluxe/gen/` art and then any committed hand-made
+   `graphics/deluxe/` redraws (deriving the latter's 32/16/8px variants
+   by box-filter halving) and composes
+   `src/main/resources/deluxe/{N}x{N}`;
+7. keeps `src/main/resources/tiles.rc` in sync with `graphics/tiles.rc`;
+8. derives `obj*_32x32.png` / `obj*_64x64.png` sprite variants;
+9. runs `micropolisj.build_tool.GenerateToolIcons`, which draws the
+   toolbar tool icons as stylized glyphs for the modern and deluxe skins
+   (`src/main/resources/tools/ic*.png` and
+   `src/main/resources/deluxe/tools/ic*.png`). The classic skin keeps the
+   original root `ic*.png`; the GUI picks the skinned variant per the
+   active `TileSkin` and refreshes the toolbar when the theme changes.
 
 The derived `graphics/*_NxN.png` intermediates are gitignored; only the
 composed sheets in `src/main/resources/` are committed.
@@ -123,6 +137,105 @@ the still-upscaled building tiles.
   its position, so they stay stable across frames, and drawing is
   clipped per cell so cars can't bleed into neighboring frames.
 
+=== Deluxe building art
+
+`GenerateDeluxeArt` produces the deluxe skin's building/zone sheets from
+the de-dithered 16px art:
+
+* a pre-blend pass melts the dense two-color checkerboards that
+  survived `DeDither`'s conservative pass (narrow dithered bands such
+  as awnings/roof trim) into their blended shade — same
+  alternation-candidate detection, but blending wherever the 3x3
+  candidate density reaches 6, which a true checkerboard always does
+  (9) and a sparse window grid never does (<=5);
+* an edge-aware mean-shift 4x upscale: each output pixel starts from a
+  bilinear estimate of its source neighborhood and is pulled toward the
+  locally dominant color mode by a joint spatial/range kernel
+  (premultiplied alpha, so transparent smoke frames don't halo). Flat
+  shades become smooth gradients, staircase diagonals become
+  anti-aliased curves, and sparse 1px detail survives because the range
+  kernel keeps distinct colors apart;
+* a finishing pass adds a gentle saturation lift and a subtle material
+  grain (periodic per tile so map neighbors join seamlessly);
+* the fountain frames inside `misc_animation` are pasted back from the
+  procedural art so the deluxe skin keeps them.
+
+Only `misc_animation` still goes through the upscaler, as the base
+sheet `DeluxeMiscArt` patches its redrawn tiles into: the power-out
+indicator, the eight raised-drawbridge tiles (deck geometry and palette
+matching the procedural road bridges), the eight-frame zone-destruction
+explosion, the airport radar sweep (from `DeluxePortArt`) and the
+nuclear reactor swirl (from `DeluxePowerArt`); the unused tiles keep
+the upscaled art, and at 16px/8px the redrawn regions are pasted over
+the modern de-dithered sheet.
+
+Every building sheet is redrawn completely from scratch (each batch
+graduated out of the upscaler after being validated in-game):
+`DeluxeResArt` draws the residential sheets (`res_zones`,
+`res_houses`) procedurally at 64px per tile — empty zone, 16 apartment
+blocks (4 land values x 4 densities), hospital, church and the 12
+single-family houses — keeping the classic tile language (green hedge
+border, green "R" sign, dirt-to-lawn value progression, gray slabs ->
+blue roofs -> awning-trimmed brick -> white luxury with the twin round
+towers, the hospital's red roof cross, the church steeple; sun from the
+northwest like the terrain art). `DeluxeComArt` draws the commercial
+sheet (`com_zones`) the same way — empty zone plus 20 business blocks
+(4 land values x 5 densities) with a concrete sidewalk ring instead of
+the hedge, the blue "C" sign, storefront rows with colored sign bands
+and display windows growing into glass curtain-wall towers, and the
+classic landmarks: the dense red-and-blue towers, the striped office
+tower, a gas station, the stepped ziggurats and the grand white
+cylinder tower at top value. `DeluxeIndArt` draws the industrial
+sheets (`ind_zones` plus the `ind01_pistons_frames` and
+`ind03/04/07/08_smoke_frames` animation overlays) — empty zone plus 8
+factory blocks (2 land values x 4 densities) with the yellow
+safety-line ring instead of hedge/sidewalk, the yellow "I" sign, dirt
+lots at every value, gray corrugated halls and the collar-banded
+smokestacks (vertical, in the same oblique projection as the church
+bell tower); landmarks kept include the piston pump bay,
+the ore yard, the sphere-tank chemical depot and the round riveted gas
+holder. The chimney mouth positions are shared constants between the
+block renderer and the animation renderer, so the 4-frame smoke plumes
+rise exactly off the stacks and stay inside the tiles `tiles.rc`
+composites them over, and the 8 piston frames are cut from the same
+block render so the powered/unpowered swap is pixel-stable.
+
+The civic and special buildings follow the same playbook, each keeping
+its classic ring color and identity mark. `DeluxeCivicArt` draws the
+fire station (red ring, three engine bays onto a concrete apron, the
+rooftop "FD", the hose tower and an engine rolling out) and the police
+station (blue ring, rooftop "PD", columned entrance with the blue lamp,
+cruiser lot), and hosts the shared kit: the parameterized ring border
+and the rooftop letters. Both stations carry a beacon-light animation —
+the fire alarm lamp pulsing red, the police rooftop pair wig-wagging
+red and blue — added as new always-on animations: `tiles.rc` composites
+`firestation_light_animation` / `police_lights_animation` over tiles
+763 and 771, the lamp fixtures and the glow frames share position
+constants, and the 16px base frame sheets are generated into
+`graphics/` (gitignored) so the classic and modern skins compose the
+same frames from their own art. `DeluxeStadiumArt` draws the empty and full
+stadium bowls (green ring, oval terraced stands, striped pitch) plus
+the eight football-game frames; the frame background is cropped from
+the very same full-bowl render, so the animated column — tiles (2,1)
+and (2,2), where `MapScanner` composites `FOOTBALLGAME1/2` — stays
+pixel-identical to its static neighbors, and player motion is
+sinusoidal in the frame counter so the loop is seamless.
+`DeluxePowerArt` draws the coal plant (coal yard and conveyor, boiler
+house, turbine hall, transformer yard, and four collar-banded stacks up
+the northeast diagonal whose `coal_smoke_frames` reuse the industrial
+plume renderer over shared stack-mouth constants) and the nuclear plant
+(the two huge cooling-tower mouths seen straight from above, the white
+containment sphere, the navy roof atom, and the fenced reactor pad the
+4-frame swirl animation lights up — three orbits 60 degrees apart
+turning 15 degrees per frame, so the loop closes). `DeluxePortArt`
+draws the seaport (blue ring, the navy anchor on the cargo hall roof,
+container yard, gantry crane) and the airport (crossing runways 9/27
+and 18/36 with thresholds and numbers, terminal with jetway gates and
+parked airliners, control tower, hangar, fuel farm, windsock; the
+radar frames crop the block's own tile (2,0) ground so the 8-frame
+dish sweep sits seamlessly on the redrawn airport). Redrawn sheets
+emit all four sizes by downscaling, like `GenerateTerrainArt`.
+
 === De-dithered buildings
 
 `DeDither` removes the dense two-color dithering the 80s art uses to
@@ -134,37 +247,43 @@ airport, coal, com_zones, firestation, ind_zones, misc_animation,
 nuclear, police, res_houses, res_zones, seaport, stadium sheets and
 their animation-frame sheets.
 
-== Deluxe skin (planned)
+== Deluxe skin
 
-A third skin, *Deluxe*, will join Classic and Modern: every tile
-completely redrawn as full-color art, replacing the de-dithered
-Scale2x/Scale4x upscales that Modern still uses for buildings and
-zones. Implementation steps:
+A third skin, *Deluxe* (infrastructure implemented June 2026), joins
+Classic and Modern: every tile completely redrawn as full-color art,
+replacing the de-dithered Scale2x/Scale4x upscales that Modern still
+uses for buildings and zones. What is in place:
 
-1. *`TileSkin`*: add a third constant `DELUXE = "deluxe"` next to
-   `MODERN`/`CLASSIC`; `resourcePrefix` returns `"deluxe/"` for it.
-   Modern stays the default (empty prefix), so existing preferences
-   keep working.
-2. *`MainWindow`*: a third radio item in Options > Graphics, wired
-   through the existing `graphicsMenuItems` /
-   `onGraphicsSkinClicked` machinery — the live-switch path
-   (`TileSkin.setPreference` + `refreshTileImages`) needs no changes.
-3. *i18n*: add `menu.options.graphics.deluxe` to all five
-   `GuiStrings*.properties` bundles (en/de/fr/it/sv); "Deluxe" works
-   untranslated in every locale.
-4. *Source art*: a dedicated `graphics/deluxe/` directory holding the
-   redrawn sheets at 64px basis (`name_64x64.png`, same sheet layout
-   and row order as the base art so `tiles.rc` and the `.ani` files
-   work unchanged). Sheets not yet redrawn simply aren't present —
-   they fall back to the modern art, so the skin stays usable while
-   the redraw is incomplete.
-5. *`build-tiles.sh`*: a third MakeTiles pass that stages the modern
-   sources (base art + generated/derived `_NxN` files) into a temp
-   dir — the same staging trick the classic pass uses — then copies
-   the `graphics/deluxe/` overrides on top, and composes
-   `src/main/resources/deluxe/{8x8,16x16,32x32,64x64}/`. The minimap
-   (`sm/`) stays shared across skins.
-6. *The art itself*: the redraw workload in the TODO list below.
+* *`TileSkin`*: third constant `DELUXE = "deluxe"`; `resourcePrefix`
+  returns `"deluxe/"` (modern keeps the empty prefix). The menu order
+  and default are Classic (default), Modern, Deluxe. The Options >
+  Graphics radio item comes for free — `MainWindow` builds the menu
+  from `TileSkin.getSupportedValues()` — and the live-switch path
+  (`TileSkin.setPreference` + `refreshTileImages`) needed no changes.
+* *i18n*: `menu.options.graphics.deluxe` in all five
+  `GuiStrings*.properties` bundles (en/de/fr/it/sv); "Deluxe" is left
+  untranslated in every locale.
+* *Source art*: the `graphics/deluxe/` directory (see its README)
+  holds the redrawn sheets at 64px basis (`name_64x64.png`, same sheet
+  layout and row order as the base art so `tiles.rc` and the `.ani`
+  files work unchanged). Sheets not yet redrawn simply aren't present —
+  they fall back to the modern art, so the skin stays usable while the
+  redraw is incomplete.
+* *`build-tiles.sh`*: a third MakeTiles pass stages the modern sources
+  (base art + generated/derived `_NxN` files) into a temp dir — the
+  same staging trick the classic pass uses — copies the
+  `graphics/deluxe/` overrides on top, derives each override's
+  32/16/8px variants by box-filter halving (unless explicit `_NxN`
+  files are committed in `graphics/deluxe/`), and composes
+  `src/main/resources/deluxe/{8x8,16x16,32x32,64x64}/`. The minimap
+  (`sm/`) stays shared across skins.
+
+The skin ships with generated art: `GenerateDeluxeArt` (see the
+pipeline notes above) replaces the blocky Scale2x/Scale4x building
+upscales with smooth, anti-aliased full-color renderings at the 32px
+and 64px zoom levels. True hand redraws (the TODO list below) remain
+welcome — committed art in `graphics/deluxe/` always wins over the
+generated sheets.
 
 == Prior manual art work (do not regress)
 
@@ -197,18 +316,37 @@ redraw with true full-color art what is currently a de-dithered
 Scale2x/Scale4x upscale of the originals. Roughly in order of
 on-screen prominence:
 
-* [ ] Residential zones and houses (`res_zones.png`, `res_houses.png`).
-* [ ] Commercial zones (`com_zones.png`).
-* [ ] Industrial zones and their smoke/piston animations
-      (`ind_zones.png`, `ind0*_frames.png`).
-* [ ] Civic buildings: fire station, police, stadium, seaport, airport,
-      coal and nuclear plants (incl. smoke/radar/swirl animations).
-* [ ] Remaining `misc_animation.png` tiles (churches, hospital, ...).
-* [ ] Sprites `obj*.png` (train, helicopter, airplane, ship, monster,
-      tornado, explosion, bus) — real hi-res art instead of Scale4x.
-      Note: `build-tiles.sh` currently always regenerates
-      `obj*_{32x32,64x64}.png`; hand-made sprite art requires removing
-      that derive step for the affected files.
+* [x] Residential zones and houses (`res_zones.png`, `res_houses.png`)
+      — redrawn procedurally (`DeluxeResArt`).
+* [x] Commercial zones (`com_zones.png`) — redrawn procedurally
+      (`DeluxeComArt`).
+* [x] Industrial zones and their smoke/piston animations
+      (`ind_zones.png`, `ind0*_frames.png`) — redrawn procedurally
+      (`DeluxeIndArt`).
+* [x] Civic buildings: fire station, police, stadium, seaport, airport,
+      coal and nuclear plants incl. smoke/radar/swirl animations —
+      redrawn procedurally (`DeluxeCivicArt`, `DeluxeStadiumArt`,
+      `DeluxePowerArt`, `DeluxePortArt`).
+* [x] In-use `misc_animation.png` tiles: power-out indicator,
+      drawbridges, zone-destruction explosion — redrawn procedurally
+      (`DeluxeMiscArt`); the remaining rows are unused by `tiles.rc`
+      and keep the upscaled art. The drawbridge tiles are also
+      patched into the *modern* `misc_animation_NxN.png` sheets
+      (`GenerateDeluxeArt.patchModernDrawbridge`), since the modern
+      skin shares the procedural road bridges.
+* [x] Sprites `obj*.png` (train, helicopter, airplane, ship, monster,
+      tornado, explosion, bus) — redrawn procedurally
+      (`GenerateSpriteArt`): the shared `obj*_{32x32,64x64}.png`
+      variants are real hi-res art now (drawn last by
+      `build-tiles.sh`, overwriting the Scale4x derive). The classic
+      skin keeps the pixel-art upscales, copied to
+      `resources/classic/` and preferred by `TileImages` there; the
+      16px base `obj*.png` stays the original art everywhere.
+* [x] Toolbar tool icons (`ic*.png` / `ic*hi.png`) — drawn as stylized
+      glyphs for the modern and deluxe skins (`GenerateToolIcons`, into
+      `resources/tools/` and `resources/deluxe/tools/`); the classic skin
+      keeps the original root art. The toolbar follows the active
+      `TileSkin` and refreshes on theme change (`MainWindow`).
 * [ ] Report/graph icons (`gr*.png`, e.g. `grpoll.png`) and building
       preview images (`airport.png`, `coal.png`, ... at resources root).
 * [ ] Minimap tiles (`graphics/*_3x3.png` -> `sm/` sheet) — flat color
@@ -217,8 +355,8 @@ on-screen prominence:
 Notes for whoever picks these up:
 
 * Provide redrawn art as `graphics/deluxe/name_64x64.png` (64px basis
-  per tile) and commit it; smaller sizes can be derived by downscaling,
-  like `GenerateTerrainArt` does. (Hand-made improvements to the
+  per tile) and commit it; `build-tiles.sh` derives the smaller sizes
+  by halving automatically. (Hand-made improvements to the
   *modern* skin instead go next to the base art as
   `graphics/name_NxN.png`: `build-tiles.sh` skips deriving any `_NxN`
   file that is tracked by git, so committed hand-made art is never

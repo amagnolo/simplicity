@@ -131,7 +131,7 @@ public class TileImages
 
 	/**
 	 * Returns the map tile images for the given tile size, honoring the
-	 * currently selected graphics skin (modern or classic).
+	 * currently selected graphics skin (modern, deluxe or classic).
 	 */
 	public static TileImages getInstance(int size)
 	{
@@ -294,10 +294,19 @@ public class TileImages
 
 	Image loadSpriteImage(SpriteKind kind, int frameNo)
 	{
-		String resourceName = "/obj"+kind.objectId+"-"+frameNo;
+		String fileName = "obj"+kind.objectId+"-"+frameNo;
+		String resourceName = "/"+fileName;
 
-		// first, try to load specific size image
-		URL iconUrl = TileImages.class.getResource(resourceName+"_"+TILE_WIDTH+"x"+TILE_HEIGHT+".png");
+		// first, try to load a specific size image: the skin's own
+		// art (e.g. /classic/obj1-0_32x32.png keeps the pixel-art
+		// upscales of the original sprites), then the shared art
+		String sized = fileName+"_"+TILE_WIDTH+"x"+TILE_HEIGHT+".png";
+		int slash = name.indexOf('/');
+		URL iconUrl = slash < 0 ? null
+			: TileImages.class.getResource("/"+name.substring(0, slash+1)+sized);
+		if (iconUrl == null) {
+			iconUrl = TileImages.class.getResource("/"+sized);
+		}
 		if (iconUrl != null) {
 			return new ImageIcon(iconUrl).getImage();
 		}

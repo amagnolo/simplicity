@@ -4,6 +4,10 @@ graphics/*_8x8.png
 graphics/*_16x16.png
 graphics/*_32x32.png
 graphics/*_64x64.png
+graphics/deluxe/gen/
+# procedural base sheets (GenerateDeluxeArt writes these for all skins)
+graphics/firestation_light_frames.png
+graphics/police_lights_frames.png
 .idea/
 .vscode/
 .settings

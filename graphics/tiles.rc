@@ -162,8 +162,11 @@
 140
 141
 142
-143
-# BEGIN ROADS WITH HEAVY TRAFFIC #                                    
+# second frame of the open draw bridge (north-south) blink: tile 95
+# has (becomes=143), so this must carry an image and loop back, or the
+# animation dead-ends on an imageless tile and painting it crashes
+143   roads@0,240                                                (bulldozable)(noburn)(overwater)(becomes=95)(description=#7)(behavior=ROAD)(pollution=50)
+# BEGIN ROADS WITH HEAVY TRAFFIC #
 144   (64) |heavy_traffic@0,0                                   (pollution=75)
 145   (65) |heavy_traffic@0,16                                  (pollution=75)
 146   (66) |heavy_traffic@0,0                                   (pollution=75)
@@ -793,7 +796,7 @@
 # BEGIN FIRE DEPT #
 761   firestation@0,0         (conducts)
 762   firestation@16,0        (conducts)
-763   firestation@32,0        (conducts)
+763   firestation@32,0|firestation_light_animation@32,0   (conducts)
 764   firestation@0,16        (conducts)
 765   firestation@16,16 (zone)(conducts)(building=3x3)(behavior=FIRESTATION)(description=#16)
 766   firestation@32,16       (conducts)
@@ -802,7 +805,7 @@
 769   firestation@32,32       (conducts)
 # BEGIN POLICE STATION #
 770   police@0,0             (conducts)
-771   police@16,0            (conducts)
+771   police@16,0|police_lights_animation@16,0   (conducts)
 772   police@32,0            (conducts)
 773   police@0,16            (conducts)
 774   police@16,16     (zone)(conducts)(building=3x3)(behavior=POLICESTATION)(description=#17)
@@ -943,19 +946,19 @@
 897
 898
 899
-900   ind_zones@16,336|ind07_smoke_frames@16,0   (conducts)(building-part=679,0,-1)(onshutdown=676)
+900   ind_zones@16,336|ind07_smoke_animation@16,0   (conducts)(building-part=679,0,-1)(onshutdown=676)
 901
 902
 903
-904   ind_zones@32,336|ind07_smoke_frames@32,0   (conducts)(building-part=679,1,-1)(onshutdown=677)
+904   ind_zones@32,336|ind07_smoke_animation@32,0   (conducts)(building-part=679,1,-1)(onshutdown=677)
 905
 906
 907
-908   ind_zones@32,384|ind08_smoke_frames@32,0   (conducts)(building-part=688,1,-1)(onshutdown=686)
+908   ind_zones@32,384|ind08_smoke_animation@32,0   (conducts)(building-part=688,1,-1)(onshutdown=686)
 909
 910
 911
-912   ind_zones@32,400|ind08_smoke_frames@32,16  (conducts)(building-part=688,1,0) (onshutdown=689)
+912   ind_zones@32,400|ind08_smoke_animation@32,16  (conducts)(building-part=688,1,0) (onshutdown=689)
 913
 914
 915

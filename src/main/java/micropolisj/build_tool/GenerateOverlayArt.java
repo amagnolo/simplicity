@@ -177,12 +177,14 @@ public class GenerateOverlayArt
 
 	BufferedImage renderRoadTile(BufferedImage src, int row)
 	{
-		// roads.png layout: 0,1 = bridges (H/V), 15 = open drawbridge
+		// roads.png layout: 0,1 = bridges (H/V), 15 = the open draw
+		// bridge's center gap — plain open water, as in the original
+		// art (the raised leaves live in the misc_animation tiles)
 		if (row == 0 || row == 1) {
-			return renderBridge(row == 0, false);
+			return renderBridge(row == 0);
 		}
 		if (row == 15) {
-			return renderBridge(true, true);
+			return renderOpenWater();
 		}
 
 		float [] opaque = alphaMask(src, row);
@@ -251,10 +253,12 @@ public class GenerateOverlayArt
 
 	/**
 	 * Road bridge over water: straight-edged deck with railings and a
-	 * dashed center line. The open drawbridge keeps only raised deck
-	 * stubs at both banks.
+	 * dashed center line, standing on concrete piers — the pier caps
+	 * poke out on both sides of the deck and the deck throws a shadow
+	 * band on the water to the southeast, so the bridge clearly reads
+	 * as elevated, like the classic art's pillars.
 	 */
-	BufferedImage renderBridge(boolean horizontal, boolean open)
+	BufferedImage renderBridge(boolean horizontal)
 	{
 		final float deckLo = 5f, deckHi = 59f;
 		BufferedImage out = new BufferedImage(N, N, BufferedImage.TYPE_INT_ARGB);
@@ -267,16 +271,33 @@ public class GenerateOverlayArt
 
 				float [] col = waterTexture(u, v, 0.9f);
 
-				boolean onSpan = !open || along < 12f || along > 52f;
+				// the deck's shadow on the water along the south/east
+				// side (sun from the northwest)
+				float shade = smoothstep(deckHi-1f, deckHi+1f, across)
+					* (1f - smoothstep(deckHi+4f, deckHi+7f, across));
+				col = mix(col, rgb(16, 20, 56), 0.45f*shade);
+
+				// pier caps every half tile, slightly wider than the
+				// deck so they show on both sides
+				float dPier = Math.min(Math.abs(along - 16f), Math.abs(along - 48f));
+				float pier = 1f - smoothstep(3.5f, 5.5f, dPier);
+				if (pier > 0f) {
+					float stub = Math.max(
+						smoothstep(deckLo-4.5f, deckLo-2.5f, across)
+							* (1f - smoothstep(deckLo, deckLo+1.5f, across)),
+						smoothstep(deckHi-1.5f, deckHi, across)
+							* (1f - smoothstep(deckHi+2.5f, deckHi+4.5f, across)));
+					if (stub > 0f) {
+						// concrete, darker on the shaded southeast side
+						float [] concrete = mix(rgb(132, 134, 140), rgb(74, 76, 84),
+							smoothstep(deckLo, deckHi+4f, across));
+						col = mix(col, concrete, pier*stub);
+					}
+				}
+
 				float deck = smoothstep(deckLo-1f, deckLo+1f, across)
 					* (1f - smoothstep(deckHi-1f, deckHi+1f, across));
-				if (open) {
-					// soften the broken ends of the raised stubs
-					float stub = Math.max(1f - smoothstep(9f, 13f, along),
-						smoothstep(51f, 55f, along));
-					deck *= stub;
-				}
-				if (onSpan && deck > 0f) {
+				if (deck > 0f) {
 					float grain = noise(u, v, 32, 61);
 					float [] asphalt = mix(rgb(66, 66, 70), rgb(84, 84, 88), grain);
 
@@ -295,6 +316,18 @@ public class GenerateOverlayArt
 				}
 
 				out.setRGB(x, y, pack(col));
+			}
+		}
+		return out;
+	}
+
+	/** Plain open water, for the open drawbridge's center gap. */
+	BufferedImage renderOpenWater()
+	{
+		BufferedImage out = new BufferedImage(N, N, BufferedImage.TYPE_INT_ARGB);
+		for (int y = 0; y < N; y++) {
+			for (int x = 0; x < N; x++) {
+				out.setRGB(x, y, pack(waterTexture(x/(float)N, y/(float)N, 0.9f)));
 			}
 		}
 		return out;
@@ -541,13 +574,27 @@ public class GenerateOverlayArt
 		BufferedImage out = new BufferedImage(N, N, BufferedImage.TYPE_INT_ARGB);
 
 		if (underwater) {
-			boolean horizontal = row == 0;
+			// row 0 runs north-south, row 1 east-west (matching the
+			// original 16px art); twin dotted cable shadows under the
+			// water, at the same positions the straight wire tiles
+			// put their twin cables
+			boolean horizontal = row == 1;
+			float [] cables = horizontal
+				? new float[] { 21.5f, 33.5f }
+				: new float[] { 25.5f, 37.5f };
 			for (int y = 0; y < N; y++) {
 				for (int x = 0; x < N; x++) {
 					float [] col = background(water, x, y);
-					float band = 1f - smoothstep(2.5f, 4.5f, Math.abs((horizontal ? y : x) + 0.5f - 32f));
-					float dash = 0.5f + 0.5f*(float)Math.sin((horizontal ? x : y) * (float)Math.PI / 5f);
-					col = mix(col, rgb(46, 46, 72), 0.8f * band * smoothstep(0.35f, 0.7f, dash));
+					// dot period divides the tile so runs join seamlessly
+					float dash = 0.5f + 0.5f*(float)Math.sin((horizontal ? x : y) * (float)Math.PI / 4f);
+					for (float c : cables) {
+						float dist = Math.abs((horizontal ? y : x) + 0.5f - c);
+						// pale corridor so the dark dots stand out
+						float halo = 1f - smoothstep(3.5f, 6.5f, dist);
+						col = mix(col, rgb(168, 192, 240), 0.45f*halo);
+						float band = 1f - smoothstep(2.6f, 4.0f, dist);
+						col = mix(col, rgb(14, 14, 28), 0.95f * band * smoothstep(0.35f, 0.65f, dash));
+					}
 					out.setRGB(x, y, pack(col));
 				}
 			}

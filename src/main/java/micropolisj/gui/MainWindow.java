@@ -937,6 +937,18 @@ public class MainWindow extends JFrame
 		TileSkin.setPreference(skin);
 		reloadOptions();
 		drawingArea.refreshTileImages();
+		refreshToolIcons();
+	}
+
+	/** Reloads every toolbar button's icon for the current graphics skin. */
+	private void refreshToolIcons()
+	{
+		for (Map.Entry<MicropolisTool, JToggleButton> e : toolBtns.entrySet()) {
+			MicropolisTool tool = e.getKey();
+			JToggleButton btn = e.getValue();
+			btn.setIcon(new ImageIcon(toolIconResource(tool, false)));
+			btn.setSelectedIcon(new ImageIcon(toolIconResource(tool, true)));
+		}
 	}
 
 	private String formatUiScale(String scale)
@@ -1095,21 +1107,47 @@ public class MainWindow extends JFrame
 		}
 	}
 
-	private JToggleButton makeToolBtn(final MicropolisTool tool)
+	/**
+	 * The base resource path for a tool's icon, honoring the i18n
+	 * override (tool.X.icon / tool.X.selected_icon) and falling back to
+	 * the default convention.
+	 */
+	private String toolIconName(MicropolisTool tool, boolean selected)
 	{
-		String iconName = strings.containsKey("tool."+tool.name()+".icon") ?
+		if (selected) {
+			return strings.containsKey("tool."+tool.name()+".selected_icon") ?
+				strings.getString("tool."+tool.name()+".selected_icon") :
+				toolIconName(tool, false);
+		}
+		return strings.containsKey("tool."+tool.name()+".icon") ?
 			strings.getString("tool."+tool.name()+".icon") :
 			"/graphics/tools/"+tool.name().toLowerCase()+".png";
-		String iconSelectedName = strings.containsKey("tool."+tool.name()+".selected_icon") ?
-			strings.getString("tool."+tool.name()+".selected_icon") :
-			iconName;
+	}
+
+	/**
+	 * Resolves a tool icon to the currently selected graphics skin: looks
+	 * for the skin's own art under {@code /<prefix>tools/<file>} and falls
+	 * back to the base (classic/root) path when that skin has no variant.
+	 */
+	private URL toolIconResource(MicropolisTool tool, boolean selected)
+	{
+		String iconName = toolIconName(tool, selected);
+		String fileName = iconName.substring(iconName.lastIndexOf('/') + 1);
+		String skinned = "/" + TileSkin.resourcePrefix(TileSkin.getPreference())
+			+ "tools/" + fileName;
+		URL url = MainWindow.class.getResource(skinned);
+		return url != null ? url : MainWindow.class.getResource(iconName);
+	}
+
+	private JToggleButton makeToolBtn(final MicropolisTool tool)
+	{
 		String tipText = strings.containsKey("tool."+tool.name()+".tip") ?
 			strings.getString("tool."+tool.name()+".tip") :
 			tool.name();
 
 		JToggleButton btn = new JToggleButton();
-		btn.setIcon(new ImageIcon(MainWindow.class.getResource(iconName)));
-		btn.setSelectedIcon(new ImageIcon(MainWindow.class.getResource(iconSelectedName)));
+		btn.setIcon(new ImageIcon(toolIconResource(tool, false)));
+		btn.setSelectedIcon(new ImageIcon(toolIconResource(tool, true)));
 		btn.setToolTipText(tipText);
 		btn.setMargin(new Insets(0,0,0,0));
 		btn.setBorderPainted(false);
