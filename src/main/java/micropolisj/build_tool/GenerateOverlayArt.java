@@ -646,7 +646,12 @@ public class GenerateOverlayArt
 		}
 
 		float [] wire = smoothMask(classMask(src, row, DARK, BLACK), 1);
-		float [] pole = smoothMask(classMask(src, row, WOOD, GRAY), 1);
+		// NB: the original 16px art draws a diagonal pole shadow under each
+		// straight/diagonal wire tile in DIRT2 (== WOOD == 0x997f4c). The
+		// modern art draws no pole, so that shadow is meaningless here and
+		// shows up as a stray stub poking out of the cable. We deliberately
+		// don't build a pole mask from WOOD; those pixels stay background
+		// (still listed as "known" in paintSpecials so they aren't dotted).
 		float [] cap = smoothMask(classMask(src, row, WHITE, LGRAY), 1);
 
 		for (int y = 0; y < N; y++) {
@@ -663,11 +668,6 @@ public class GenerateOverlayArt
 				float w = smoothstep(0.30f, 0.52f, wire[y*N+x]);
 				if (w > 0f) {
 					col = mix(col, rgb(40, 36, 34), w);
-				}
-
-				float p = smoothstep(0.45f, 0.62f, pole[y*N+x]);
-				if (p > 0f) {
-					col = mix(col, rgb(110, 82, 50), p);
 				}
 
 				float c = smoothstep(0.48f, 0.64f, cap[y*N+x]);
